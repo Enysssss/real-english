@@ -824,6 +824,396 @@
       "grammar": "« once I'm done with » = subordonnée temporelle informelle (une fois que j'aurai fini).",
       "vocab": "get stuck into (something) = se plonger à fond dans quelque chose.",
       "tip": "« Get stuck into » est une expression britannique enthousiaste, parfaite pour parler de passions ou projets personnels."
+    },
+    {
+      "id": "travel-7",
+      "cat": "travel",
+      "fr": "Le vol a été retardé de deux heures à cause de la météo.",
+      "en": [
+        "The flight was delayed by two hours because of the weather."
+      ],
+      "native": "The flight got delayed two hours because of the weather, typical.",
+      "formal": "The flight was delayed by two hours owing to adverse weather conditions.",
+      "grammar": "Passif avec « get » (got delayed) = alternative informelle à « was delayed », très courante à l'oral pour le passif.",
+      "vocab": "owing to = à cause de (registre soutenu, alternative à « because of »).",
+      "tip": "« Typical » tout seul en fin de phrase est une façon très britannique d'exprimer une résignation ironique face à un contretemps."
+    },
+    {
+      "id": "travel-8",
+      "cat": "travel",
+      "fr": "Je n'ai jamais pris l'avion tout seul avant, ça me stresse un peu.",
+      "en": [
+        "I've never flown alone before, it stresses me out a bit."
+      ],
+      "native": "I've never flown solo before, it's freaking me out a bit, not gonna lie.",
+      "formal": "I have never travelled by air unaccompanied before, which causes me a certain degree of anxiety.",
+      "grammar": "Present perfect + « never » (I've never flown) = expérience de vie qui ne s'est jamais produite jusqu'à maintenant, distinct du present perfect pour un résultat immédiat (cf. travel-2).",
+      "vocab": "not gonna lie (informel) = pour être honnête, marqueur discursif très courant à l'oral.",
+      "tip": "« Gonna » (going to) à l'oral rapide est omniprésent, mais reste à éviter à l'écrit même informel comme un mail professionnel."
+    },
+    {
+      "id": "travel-9",
+      "cat": "travel",
+      "fr": "On devrait louer une voiture plutôt que de prendre les transports en commun là-bas.",
+      "en": [
+        "We should rent a car rather than take public transport there."
+      ],
+      "native": "We might as well hire a car rather than faff about with public transport out there.",
+      "formal": "It would be preferable to hire a vehicle rather than rely on public transportation while there.",
+      "grammar": "« might as well » + base verbale = suggestion présentée comme évidente, nuance différente de « should ».",
+      "vocab": "faff about (with something) (informel, britannique) = perdre du temps à s'embêter avec quelque chose.",
+      "tip": "« Hire a car » est la version britannique standard ; « rent a car » est plus américain, bien que compris partout."
+    },
+    {
+      "id": "work-7",
+      "cat": "work",
+      "fr": "Je pensais avoir fini, mais en fait il me reste encore deux trucs à régler.",
+      "en": [
+        "I thought I was done, but actually I still have two things left to sort out."
+      ],
+      "native": "I thought I was done, but turns out I've still got a couple of things to sort out.",
+      "formal": "I believed I had completed the task; however, two matters still remain to be resolved.",
+      "grammar": "« turns out » (présent simple, valeur de découverte soudaine) introduit un contraste avec ce qu'on pensait au départ.",
+      "vocab": "sort out (phrasal verb) = régler/résoudre, très courant en anglais professionnel oral.",
+      "tip": "« Turns out » en début de phrase est un marqueur oral extrêmement fréquent pour annoncer une révélation ou une surprise."
+    },
+    {
+      "id": "work-8",
+      "cat": "work",
+      "fr": "Elle a pris la parole en réunion et franchement, elle a été très convaincante.",
+      "en": [
+        "She spoke up in the meeting and honestly, she was very convincing."
+      ],
+      "native": "She spoke up in the meeting and honestly, she smashed it.",
+      "formal": "She addressed the meeting and was, in truth, remarkably persuasive.",
+      "grammar": "« honestly » utilisé comme adverbe de phrase détaché par une virgule = exprime un jugement du locuteur sur toute la proposition, pas une manière de faire l'action.",
+      "vocab": "smash it (informel) = très bien réussir/assurer, très utilisé pour des performances ou entretiens.",
+      "tip": "« Smash it » est un compliment de performance extrêmement courant chez les jeunes actifs britanniques, réservé à l'oral entre collègues proches."
+    },
+    {
+      "id": "work-9",
+      "cat": "work",
+      "fr": "Si j'étais toi, je ne signerais pas ce contrat sans le relire deux fois.",
+      "en": [
+        "If I were you, I wouldn't sign this contract without reading it over twice."
+      ],
+      "native": "If I were you, I wouldn't sign that without giving it a proper once-over first.",
+      "formal": "Were I in your position, I would not sign this contract without reviewing it thoroughly beforehand.",
+      "grammar": "Seconde conditionnelle (If I were you + wouldn't) pour un conseil hypothétique — « were » reste invariable même à la première personne.",
+      "vocab": "a once-over (informel) = une vérification rapide mais attentive, pour un document ou un objet.",
+      "tip": "« Were I in your position » (inversion sans if) est une structure très soutenue, réservée à l'écrit formel ou aux discours."
+    },
+    {
+      "id": "interview-7",
+      "cat": "interview",
+      "fr": "Qu'est-ce qui vous a poussé à postuler chez nous en particulier ?",
+      "en": [
+        "What made you want to apply to us in particular?"
+      ],
+      "native": "So what was it that drew you to us specifically?",
+      "formal": "What specifically motivated your decision to apply to our organisation?",
+      "grammar": "Structure clivée « What was it that... » pour mettre l'accent sur la cause précise recherchée par l'intervieweur.",
+      "vocab": "draw someone to something = attirer quelqu'un vers quelque chose (registre soutenu-neutre, courant en entretien).",
+      "tip": "« So » en début de question à l'oral britannique introduit une transition naturelle entre deux sujets d'entretien, sans réelle valeur de conséquence."
+    },
+    {
+      "id": "interview-8",
+      "cat": "interview",
+      "fr": "J'ai dû gérer une équipe alors que je n'avais aucune expérience de management.",
+      "en": [
+        "I had to manage a team even though I had no management experience."
+      ],
+      "native": "I ended up managing a team despite having zero management experience.",
+      "formal": "I was required to manage a team despite possessing no prior managerial experience.",
+      "grammar": "« despite » + gérondif (despite having) — jamais suivi d'une proposition avec sujet+verbe conjugué contrairement à « although ».",
+      "vocab": "end up + gérondif = finir par se retrouver à faire quelque chose, souvent sans l'avoir prévu.",
+      "tip": "« Zero » utilisé comme intensificateur informel (« zero experience ») est très courant à l'oral pour insister, à la place de « no... at all »."
+    },
+    {
+      "id": "interview-9",
+      "cat": "interview",
+      "fr": "Honnêtement, mon plus gros point faible c'est que je suis trop perfectionniste.",
+      "en": [
+        "Honestly, my biggest weakness is that I'm too much of a perfectionist."
+      ],
+      "native": "Honestly, my biggest weakness is probably that I'm a bit of a perfectionist.",
+      "formal": "My most significant weakness, in all honesty, is a tendency towards excessive perfectionism.",
+      "grammar": "« a bit of a » + nom = atténuateur informel devant un nom, différent de « a bit » devant un adjectif (cf. travel-6).",
+      "vocab": "a tendency towards (something) (soutenu) = une tendance à, pour décrire un trait de caractère.",
+      "tip": "Le perfectionnisme comme point faible est une réponse tellement classique en entretien anglophone qu'elle est presque devenue un cliché ; mieux vaut la nuancer avec un exemple concret."
+    },
+    {
+      "id": "restaurant-7",
+      "cat": "restaurant",
+      "fr": "Ce vin va très bien avec le plat que vous avez choisi.",
+      "en": [
+        "This wine goes really well with the dish you've chosen."
+      ],
+      "native": "This wine goes really nicely with what you've picked.",
+      "formal": "This wine pairs particularly well with the dish you have selected.",
+      "grammar": "« go well with » (phrasal verb figuré) pour parler d'accord culinaire, jamais au sens propre de mouvement ici.",
+      "vocab": "pair with (soutenu) = accorder/marier, terme technique très utilisé en gastronomie.",
+      "tip": "« Pair with » est le terme technique des sommeliers, mais à l'oral les Britanniques disent aussi souvent simplement « goes really well with »."
+    },
+    {
+      "id": "restaurant-8",
+      "cat": "restaurant",
+      "fr": "Ils n'avaient plus notre réservation dans le système, ça a été un peu gênant.",
+      "en": [
+        "They didn't have our reservation in the system anymore, it was a bit awkward."
+      ],
+      "native": "They'd lost our booking in the system somehow, bit awkward, that.",
+      "formal": "Our reservation appeared to have been lost from their system, which proved somewhat embarrassing.",
+      "grammar": "Past perfect (they'd lost) pour une action antérieure à un autre moment du passé — la perte a eu lieu avant qu'on arrive.",
+      "vocab": "booking = réservation (terme britannique courant, alternative à « reservation » surtout à l'oral).",
+      "tip": "« Bit awkward, that » en fin de phrase (sujet+adjectif inversés, sans verbe) est une structure orale très relâchée pour commenter une situation, typique du nord de l'Angleterre."
+    },
+    {
+      "id": "restaurant-9",
+      "cat": "restaurant",
+      "fr": "On a été servis super vite, ce qui change des autres fois.",
+      "en": [
+        "We were served really quickly, which is a change from other times."
+      ],
+      "native": "We got served dead quick, which makes a change, I'll give them that.",
+      "formal": "We were served remarkably promptly, which was a welcome departure from previous occasions.",
+      "grammar": "« which » en début de proposition relative non déterminative, se référant à toute la proposition précédente et non à un nom précis.",
+      "vocab": "make a change (expression figée) = être un changement agréable par rapport à d'habitude.",
+      "tip": "« Dead » comme intensificateur informel (« dead quick ») est typiquement britannique (surtout nord de l'Angleterre), équivalent de « really » à l'oral relâché."
+    },
+    {
+      "id": "humor-7",
+      "cat": "humor",
+      "fr": "Il raconte toujours la même blague, mais elle me fait rire à chaque fois.",
+      "en": [
+        "He always tells the same joke, but it makes me laugh every time."
+      ],
+      "native": "He tells the same joke every single time, but it gets me every time, honestly.",
+      "formal": "He invariably recounts the same joke, yet it never fails to amuse me.",
+      "grammar": "« never fails to » + base verbale (registre soutenu) pour exprimer une constance, équivalent emphatique de « always ».",
+      "vocab": "get someone (informel, figuré) = faire rire/toucher quelqu'un, pas au sens physique.",
+      "tip": "« Get me » au sens de « me faire rire/me toucher » est un usage figuré courant, à ne pas confondre avec « comprendre » (do you get me?)."
+    },
+    {
+      "id": "humor-8",
+      "cat": "humor",
+      "fr": "Il n'arrête pas de se moquer de lui-même, c'est ça qui le rend attachant.",
+      "en": [
+        "He keeps making fun of himself, that's what makes him endearing."
+      ],
+      "native": "He's always taking the mick out of himself, that's what makes him so likeable.",
+      "formal": "He constantly mocks himself, which is precisely what renders him endearing.",
+      "grammar": "« keep » + gérondif (keeps making) = action répétée/habituelle dans le présent, insistance sur la régularité.",
+      "vocab": "take the mick out of someone/oneself (informel, britannique) = se moquer gentiment de quelqu'un/de soi-même.",
+      "tip": "L'autodérision (self-deprecating humour) est l'une des formes d'humour les plus valorisées culturellement au Royaume-Uni, contrairement à l'humour qui se moque des autres."
+    },
+    {
+      "id": "humor-9",
+      "cat": "humor",
+      "fr": "Je ne voulais pas rire, mais c'est parti tout seul.",
+      "en": [
+        "I didn't want to laugh, but it just happened on its own."
+      ],
+      "native": "I didn't want to crack up, but I just couldn't help myself.",
+      "formal": "I did not intend to laugh, yet I was unable to restrain myself.",
+      "grammar": "« can't help + myself » (structure lexicalisée) = ne pas pouvoir s'en empêcher, distincte de « can't » + base verbale pour l'incapacité déjà vue (cf. humor-6).",
+      "vocab": "crack up (informel) = éclater de rire, plus intense que simplement « laugh ».",
+      "tip": "« Can't help myself/it » est une structure essentielle pour exprimer une perte de contrôle involontaire, que ce soit pour rire, manger, ou craquer pour quelque chose."
+    },
+    {
+      "id": "wedding-7",
+      "cat": "wedding",
+      "fr": "On organise son enterrement de vie de jeune fille, tu as des idées d'activités ?",
+      "en": [
+        "We're organising her hen do, do you have any activity ideas?"
+      ],
+      "native": "We're sorting her hen do, got any ideas for activities?",
+      "formal": "We are organising her hen party; do you have any suggestions for activities?",
+      "grammar": "« any » dans les questions (got any ideas?) = « any » s'utilise dans les questions/négations, là où « some » serait utilisé dans l'affirmative correspondante (I've got some ideas).",
+      "vocab": "hen do / hen party = enterrement de vie de jeune fille (l'équivalent masculin est « stag do »).",
+      "tip": "« Hen do » et « stag do » sont des institutions culturelles britanniques incontournables avant un mariage, souvent organisées comme un week-end entre amis dans une autre ville."
+    },
+    {
+      "id": "wedding-8",
+      "cat": "wedding",
+      "fr": "Les alliances doivent être données au témoin avant la cérémonie.",
+      "en": [
+        "The rings need to be given to the best man before the ceremony."
+      ],
+      "native": "The rings need to be handed over to the best man before the do kicks off.",
+      "formal": "The wedding rings must be entrusted to the best man prior to the commencement of the ceremony.",
+      "grammar": "Passif avec modal (need to be given) = obligation exprimée au passif, distinct du passif simple déjà vu (cf. wedding-2).",
+      "vocab": "kick off (informel) = commencer/démarrer, à l'origine terme de football généralisé à tout évènement.",
+      "tip": "« Kick off » pour un évènement social est un bon exemple de vocabulaire sportif recyclé dans la vie quotidienne britannique (cf. play catch-up, work-3)."
+    },
+    {
+      "id": "wedding-9",
+      "cat": "wedding",
+      "fr": "Ça a dû coûter une fortune, tout ce mariage, mais c'était magnifique.",
+      "en": [
+        "This whole wedding must have cost a fortune, but it was beautiful."
+      ],
+      "native": "This must have cost an absolute fortune, but it was gorgeous, honestly.",
+      "formal": "This wedding must have been extremely costly, yet it was truly beautiful.",
+      "grammar": "« must have » + participe passé = déduction logique sur un fait passé, à ne pas confondre avec « had to » qui exprime une obligation passée réelle.",
+      "vocab": "cost a fortune (expression figée, informelle) = coûter très cher.",
+      "tip": "« Must have + participe passé » est une structure clé de déduction sur le passé, très utilisée à l'oral pour commenter ce qu'on suppose sans certitude absolue."
+    },
+    {
+      "id": "smalltalk-7",
+      "cat": "smalltalk",
+      "fr": "Ça te dit qu'on prenne un café un de ces quatre ?",
+      "en": [
+        "Do you fancy grabbing a coffee sometime?"
+      ],
+      "native": "Fancy grabbing a coffee sometime?",
+      "formal": "Would you be interested in meeting for a coffee at some point?",
+      "grammar": "Question elliptique sans sujet ni auxiliaire (« Fancy...? » au lieu de « Do you fancy...? ») — l'oral britannique omet souvent le début d'une question quand le contexte est clair.",
+      "vocab": "fancy + gérondif (informel) = avoir envie de, très courant pour proposer une activité.",
+      "tip": "« Sometime » en fin de proposition reste volontairement vague, une façon très britannique de proposer sans s'engager sur une date précise."
+    },
+    {
+      "id": "smalltalk-8",
+      "cat": "smalltalk",
+      "fr": "Je ne sais pas toi, mais moi cette semaine, elle n'en finit plus.",
+      "en": [
+        "I don't know about you, but for me this week is never-ending."
+      ],
+      "native": "I don't know about you, but this week just seems to be dragging for me.",
+      "formal": "I cannot speak for you, but this week has felt particularly interminable to me.",
+      "grammar": "« seem to » + base verbale = exprimer une impression subjective plutôt qu'un fait certain.",
+      "vocab": "drag (figuré, verbe intransitif) = sembler interminable/traîner en longueur, pour parler du temps qui passe lentement.",
+      "tip": "« I don't know about you, but... » est une entrée en matière très fréquente pour partager une opinion personnelle en small talk, façon polie de généraliser sans imposer."
+    },
+    {
+      "id": "smalltalk-9",
+      "cat": "smalltalk",
+      "fr": "Elle a changé de coiffure, ça lui va vraiment bien.",
+      "en": [
+        "She's changed her hairstyle, it really suits her."
+      ],
+      "native": "She's had her hair done differently, it really suits her, doesn't it?",
+      "formal": "She has altered her hairstyle, and it suits her particularly well.",
+      "grammar": "« have + COD + participe passé » (has had her hair done) = structure causative pour une action réalisée par un tiers, différente de la causative avec « make » déjà vue (cf. wedding-5).",
+      "vocab": "suit someone = aller bien à quelqu'un esthétiquement, à ne pas confondre avec « fit » qui concerne la taille du vêtement.",
+      "tip": "« Doesn't it? » en fin de phrase (question tag) sollicite l'accord de l'interlocuteur, un réflexe social très fréquent en small talk britannique."
+    },
+    {
+      "id": "politics-7",
+      "cat": "politics",
+      "fr": "Je ne vote pas forcément pour la même personne à chaque élection.",
+      "en": [
+        "I don't necessarily vote for the same person in every election."
+      ],
+      "native": "I don't always vote the same way every election, to be fair.",
+      "formal": "I do not necessarily support the same candidate in every election.",
+      "grammar": "« not always » + verbe = négation partielle (fréquence non systématique), différent de « never » (négation totale).",
+      "vocab": "to be fair (informel) = pour être honnête/juste, marqueur discursif très courant pour nuancer une affirmation.",
+      "tip": "« To be fair » en fin de phrase est un tic de langage britannique extrêmement fréquent pour nuancer ou reconnaître un point de vue opposé."
+    },
+    {
+      "id": "politics-8",
+      "cat": "politics",
+      "fr": "Je trouve ça dommage que les jeunes s'intéressent de moins en moins à la politique.",
+      "en": [
+        "I think it's a shame that young people are becoming less and less interested in politics."
+      ],
+      "native": "It's a real shame, if you ask me, how little young people seem to care about politics these days.",
+      "formal": "It is regrettable that young people appear to be increasingly disengaged from political matters.",
+      "grammar": "« how little » + sujet + verbe (proposition exclamative introduite par how) pour insister sur un faible degré.",
+      "vocab": "disengaged from (soutenu) = détaché de/désintéressé de, registre plus soutenu que « not interested ».",
+      "tip": "« These days » en fin de phrase marque une comparaison implicite avec le passé, très utilisé pour commenter une évolution sociétale."
+    },
+    {
+      "id": "politics-9",
+      "cat": "politics",
+      "fr": "On évite de parler politique pendant les repas de famille, ça finit toujours mal.",
+      "en": [
+        "We avoid talking about politics during family meals, it always ends badly."
+      ],
+      "native": "We steer clear of politics at family dinners, it always kicks off otherwise.",
+      "formal": "We refrain from discussing politics during family gatherings, as it invariably leads to conflict.",
+      "grammar": "« steer clear of » + nom/gérondif = éviter soigneusement quelque chose, verbe à particule imagé (comme éviter un obstacle en pilotant).",
+      "vocab": "kick off (informel, ici sens différent de « commencer ») = dégénérer/partir en dispute (cf. sens différent déjà vu en wedding-8).",
+      "tip": "« Kick off » illustre bien la polysémie de l'anglais familier : « commencer » pour un évènement, mais « dégénérer en clash » pour une conversation — le contexte fait toute la différence."
+    },
+    {
+      "id": "worldview-7",
+      "cat": "worldview",
+      "fr": "Je pense qu'on devient plus tolérant en vieillissant, en général.",
+      "en": [
+        "I think people become more tolerant as they get older, generally."
+      ],
+      "native": "I reckon you get more tolerant the older you get, generally speaking.",
+      "formal": "I believe that individuals tend to become more tolerant with advancing age.",
+      "grammar": "« the + comparatif, the + comparatif » (the older you get) = structure corrélative pour exprimer une évolution parallèle entre deux éléments.",
+      "vocab": "generally speaking (locution adverbiale) = de manière générale, registre soutenu-neutre.",
+      "tip": "« The older you get, the more... » est une structure très prisée à l'oral comme à l'écrit pour exprimer une observation de vie apprise avec le temps."
+    },
+    {
+      "id": "worldview-8",
+      "cat": "worldview",
+      "fr": "Échouer une fois ne veut pas dire qu'on est nul, ça veut juste dire qu'on a essayé.",
+      "en": [
+        "Failing once doesn't mean you're bad at it, it just means you tried."
+      ],
+      "native": "Failing once doesn't make you rubbish at something, it just means you had a go.",
+      "formal": "A single failure does not indicate incompetence; it merely demonstrates that an attempt was made.",
+      "grammar": "« make » + COD + adjectif (doesn't make you rubbish) = structure causative avec « make » suivie d'un adjectif attribut, distincte de « make » + base verbale déjà vue (cf. wedding-5).",
+      "vocab": "have a go (at something) (informel, britannique) = essayer/tenter sa chance.",
+      "tip": "« Rubbish » comme adjectif informel signifiant « nul/mauvais » (pas seulement « déchets ») est un exemple typique de mot ordinaire détourné en argot britannique quotidien."
+    },
+    {
+      "id": "worldview-9",
+      "cat": "worldview",
+      "fr": "Avec le recul, je pense que j'ai pris la bonne décision, même si ça a été dur sur le moment.",
+      "en": [
+        "Looking back, I think I made the right decision, even though it was hard at the time."
+      ],
+      "native": "Looking back on it, I reckon I made the right call, even if it was tough going at the time.",
+      "formal": "In retrospect, I believe I made the correct decision, notwithstanding the difficulty I experienced at the time.",
+      "grammar": "« looking back (on something) » (gérondif en début de phrase) = proposition participiale pour introduire une réflexion rétrospective, équivalent informel de « in retrospect ».",
+      "vocab": "make the right call (informel) = prendre la bonne décision, « call » au sens figuré de décision.",
+      "tip": "« In retrospect » est la version soutenue de « looking back », utile pour passer du registre oral à l'écrit académique sans effort."
+    },
+    {
+      "id": "studies-7",
+      "cat": "studies",
+      "fr": "Je révise en groupe, ça m'aide à mieux retenir les choses.",
+      "en": [
+        "I revise in a group, it helps me remember things better."
+      ],
+      "native": "I study in a group, it helps stuff sink in better, to be honest.",
+      "formal": "I revise collaboratively, which assists me in retaining information more effectively.",
+      "grammar": "« help » + base verbale sans « to » (helps stuff sink in) — les deux formes coexistent (help to / help + base), celle sans « to » est la plus courante à l'oral.",
+      "vocab": "sink in (informel) = être assimilé/compris en profondeur, pour une information ou une idée.",
+      "tip": "« Stuff » comme mot passe-partout informel (à la place de « things ») est extrêmement fréquent à l'oral étudiant britannique, à éviter à l'écrit académique."
+    },
+    {
+      "id": "studies-8",
+      "cat": "studies",
+      "fr": "Je n'ai clairement pas assez préparé cet exposé, ça va se voir.",
+      "en": [
+        "I clearly haven't prepared enough for this presentation, it's going to show."
+      ],
+      "native": "I definitely haven't prepped enough for this presentation, it's going to show.",
+      "formal": "I have evidently not adequately prepared for this presentation, which will be apparent.",
+      "grammar": "Adverbes de certitude (« clearly »/« definitely ») placés en début de phrase pour renforcer une affirmation — position mobile en anglais, plus rigide en français.",
+      "vocab": "prep (verbe informel, abréviation de « prepare ») = préparer/potasser, très courant chez les étudiants britanniques.",
+      "tip": "« Prep » utilisé comme verbe est un exemple typique de la tendance britannique à transformer des noms/adjectifs en verbes informels à l'oral étudiant."
+    },
+    {
+      "id": "studies-9",
+      "cat": "studies",
+      "fr": "Si j'avais révisé plus tôt, je n'aurais pas eu à tout faire la veille.",
+      "en": [
+        "If I had revised earlier, I wouldn't have had to do everything the night before."
+      ],
+      "native": "If I'd revised earlier, I wouldn't have had to cram everything the night before.",
+      "formal": "Had I revised earlier, I would not have been required to complete everything the previous evening.",
+      "grammar": "Troisième conditionnelle (if + past perfect, would have + participe passé) pour un regret sur une situation passée impossible à changer.",
+      "vocab": "the night before (locution temporelle) = la veille au soir, alternative courante à « the previous evening ».",
+      "tip": "« Had I revised earlier » (inversion sans if) est la version soutenue de la troisième conditionnelle, réservée à l'écrit très formel ou aux discours."
     }
   ]
 }
