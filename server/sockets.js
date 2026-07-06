@@ -7,7 +7,7 @@ function registerSocketHandlers(io) {
     socket.on('session:create', ({ hostName } = {}, ack) => {
       const session = gameManager.createSession(socket.id, hostName);
       socket.join(session.code);
-      ack && ack({ code: session.code });
+      ack && ack({ code: session.code, playerId: session.hostPlayerId });
       gameManager.broadcastSessionUpdate(session);
     });
 

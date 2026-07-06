@@ -66,10 +66,13 @@ function broadcastSessionUpdate(session) {
 
 function createSession(hostSocketId, hostName) {
   const code = generateCode();
+  const trimmedHostName = (hostName || '').trim().slice(0, 24) || 'Chef';
+  const hostPlayerId = makePlayerId();
   const session = {
     code,
     hostSocketId,
-    hostName: (hostName || '').trim().slice(0, 24) || 'Chef',
+    hostName: trimmedHostName,
+    hostPlayerId,
     players: new Map(),
     phase: 'lobby',
     rounds: [],
@@ -82,6 +85,14 @@ function createSession(hostSocketId, hostName) {
     reviewCursor: { roundIndex: 0, playerIdx: 0 },
     createdAt: Date.now(),
   };
+  // the host plays too — they just also happen to grade the answers afterwards
+  session.players.set(hostPlayerId, {
+    id: hostPlayerId,
+    name: trimmedHostName,
+    socketId: hostSocketId,
+    connected: true,
+    totalScore: 0,
+  });
   sessions.set(code, session);
   return session;
 }

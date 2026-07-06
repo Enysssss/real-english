@@ -219,7 +219,7 @@
       if (!hostName) return showError('Entre un pseudo.');
       socket.emit('session:create', { hostName }, (res) => {
         if (res.error) return showError(res.error);
-        me = { code: res.code, name: hostName, playerId: null, isHost: true };
+        me = { code: res.code, name: hostName, playerId: res.playerId, isHost: true };
         saveMe();
         state = { screen:'lobby', hostName, players: [] };
         render();
@@ -265,31 +265,24 @@
   }
 
   function renderQuestion(){
-    const isHost = me.isHost;
     app.innerHTML = `
       <div class="card">
         <div class="round-label">Question ${state.roundIndex + 1} / ${state.totalRounds}</div>
         <div class="fr-phrase">${escapeHtml(state.fr)}</div>
         <div class="timer" id="timerDisplay">30s</div>
-        ${isHost
-          ? `<div class="muted">Les joueurs répondent en ce moment…</div>`
-          : `
-            <textarea id="answerInput" placeholder="Ta réponse en anglais…"></textarea>
-            <button id="submitBtn" class="btn-primary">Envoyer</button>
-            <div id="submitStatus" class="muted"></div>
-          `}
+        <textarea id="answerInput" placeholder="Ta réponse en anglais…"></textarea>
+        <button id="submitBtn" class="btn-primary">Envoyer</button>
+        <div id="submitStatus" class="muted"></div>
       </div>
     `;
-    if (!isHost){
-      document.getElementById('submitBtn').onclick = () => {
-        const text = document.getElementById('answerInput').value;
-        socket.emit('answer:submit', { code: me.code, text }, (res) => {
-          const statusEl = document.getElementById('submitStatus');
-          if (!statusEl) return;
-          statusEl.textContent = (res && res.error) ? res.error : 'Réponse envoyée ✓';
-        });
-      };
-    }
+    document.getElementById('submitBtn').onclick = () => {
+      const text = document.getElementById('answerInput').value;
+      socket.emit('answer:submit', { code: me.code, text }, (res) => {
+        const statusEl = document.getElementById('submitStatus');
+        if (!statusEl) return;
+        statusEl.textContent = (res && res.error) ? res.error : 'Réponse envoyée ✓';
+      });
+    };
     const tick = () => {
       const remainingMs = state.deadline - Date.now();
       const remaining = Math.max(0, Math.ceil(remainingMs / 1000));
