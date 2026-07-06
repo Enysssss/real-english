@@ -1,0 +1,829 @@
+{
+  "categories": [
+    {
+      "key": "travel",
+      "label": "Voyage"
+    },
+    {
+      "key": "work",
+      "label": "Travail"
+    },
+    {
+      "key": "interview",
+      "label": "Entretien"
+    },
+    {
+      "key": "restaurant",
+      "label": "Restaurant"
+    },
+    {
+      "key": "humor",
+      "label": "Humour"
+    },
+    {
+      "key": "wedding",
+      "label": "Mariage & tenue"
+    },
+    {
+      "key": "smalltalk",
+      "label": "Small talk"
+    },
+    {
+      "key": "politics",
+      "label": "Politique & opinions"
+    },
+    {
+      "key": "worldview",
+      "label": "Vision du monde"
+    },
+    {
+      "key": "studies",
+      "label": "Études"
+    }
+  ],
+  "items": [
+    {
+      "id": "travel-1",
+      "cat": "travel",
+      "fr": "Excusez-moi, est-ce que ce train s'arrête bien à Manchester ?",
+      "en": [
+        "Excuse me, does this train stop at Manchester?"
+      ],
+      "native": "Sorry, does this train stop off at Manchester?",
+      "formal": "Excuse me, could you confirm whether this train stops at Manchester?",
+      "grammar": "Question avec l'auxiliaire « does » + verbe à l'infinitif sans -s (stop, pas stops) — piège classique.",
+      "vocab": "stop at / stop off at = s'arrêter à (un arrêt intermédiaire).",
+      "tip": "Au Royaume-Uni, on commence presque toujours par « sorry » ou « excuse me » même pour une question simple : c'est un réflexe de politesse, pas une vraie excuse."
+    },
+    {
+      "id": "travel-2",
+      "cat": "travel",
+      "fr": "Je crois que j'ai raté ma correspondance.",
+      "en": [
+        "I think I've missed my connection.",
+        "I think I missed my connecting flight."
+      ],
+      "native": "I think I've missed my connection, mate.",
+      "formal": "I believe I have missed my connecting flight.",
+      "grammar": "Present perfect (have missed) car la conséquence est encore présente maintenant, contrairement au past simple.",
+      "vocab": "connection = correspondance (avion/train), pas « connexion internet » ici.",
+      "tip": "« Mate » est un mot d'adresse très courant en Angleterre entre inconnus, pas seulement entre amis."
+    },
+    {
+      "id": "travel-3",
+      "cat": "travel",
+      "fr": "Vous pourriez m'indiquer la sortie la plus proche ?",
+      "en": [
+        "Could you show me the nearest exit?",
+        "Could you point me to the nearest exit?"
+      ],
+      "native": "Could you point me towards the nearest exit?",
+      "formal": "Would you be able to direct me to the nearest exit?",
+      "grammar": "Could you + base verbale = demande polie ; jamais « Could you to show ».",
+      "vocab": "point someone towards/to = indiquer la direction à quelqu'un.",
+      "tip": "« Would you be able to » est plus formel que « could you », utile en contexte professionnel ou avec un inconnu plus âgé."
+    },
+    {
+      "id": "travel-4",
+      "cat": "travel",
+      "fr": "On aimerait une chambre avec vue sur la mer, si possible.",
+      "en": [
+        "We'd like a room with a sea view, if possible."
+      ],
+      "native": "We were hoping for a room with a sea view, if that's alright.",
+      "formal": "We would appreciate a room offering a sea view, if available.",
+      "grammar": "« We'd like » = contraction de « we would like », formule standard de demande polie.",
+      "vocab": "sea view = vue sur la mer (jamais « view on the sea »).",
+      "tip": "« If that's alright » adoucit une demande : très utilisé à l'hôtel ou au restaurant."
+    },
+    {
+      "id": "travel-5",
+      "cat": "travel",
+      "fr": "Ça fait combien de temps que vous êtes en Angleterre ?",
+      "en": [
+        "How long have you been in England?"
+      ],
+      "native": "How long have you been over here, then?",
+      "formal": "For how long have you been residing in England?",
+      "grammar": "Present perfect + « how long » pour une action commencée dans le passé et qui continue.",
+      "vocab": "« over here » = familier pour désigner l'endroit où on se trouve tous les deux.",
+      "tip": "Ajouter « then » en fin de question adoucit le ton et le rend plus amical — presque un tic de langage anglais."
+    },
+    {
+      "id": "travel-6",
+      "cat": "travel",
+      "fr": "Je suis un peu perdu, je cherche la gare centrale.",
+      "en": [
+        "I'm a bit lost, I'm looking for the central station."
+      ],
+      "native": "I'm a bit turned around, I'm trying to find the main station.",
+      "formal": "I appear to have lost my bearings; I am looking for the central railway station.",
+      "grammar": "« a bit » + adjectif = léger degré, très utilisé à l'oral pour minimiser (understatement).",
+      "vocab": "turned around = désorienté (familier) ; lost one's bearings = perdre ses repères (soutenu).",
+      "tip": "Les Anglais adorent minimiser (« a bit lost » plutôt que « complètement perdu ») : c'est l'understatement, une marque culturelle forte."
+    },
+    {
+      "id": "work-1",
+      "cat": "work",
+      "fr": "Je pense qu'on devrait revoir le planning avant vendredi.",
+      "en": [
+        "I think we should revisit the schedule before Friday.",
+        "I think we should review the schedule before Friday."
+      ],
+      "native": "I reckon we should have another look at the schedule before Friday.",
+      "formal": "I believe it would be advisable to revise the schedule prior to Friday.",
+      "grammar": "« should » + base verbale = suggestion/obligation modérée.",
+      "vocab": "reckon = penser/estimer, très courant à l'oral britannique, plus informel que « think ».",
+      "tip": "« I reckon » est extrêmement fréquent au Royaume-Uni à l'oral, presque un marqueur régional (nord de l'Angleterre notamment)."
+    },
+    {
+      "id": "work-2",
+      "cat": "work",
+      "fr": "Peux-tu me mettre en copie sur ce mail ?",
+      "en": [
+        "Can you cc me on that email?"
+      ],
+      "native": "Could you loop me in on that email?",
+      "formal": "Would you kindly copy me on that email correspondence?",
+      "grammar": "« cc » utilisé comme verbe (to cc someone) — nom devenu verbe, fréquent en anglais des affaires.",
+      "vocab": "loop someone in = inclure quelqu'un dans une conversation/un échange.",
+      "tip": "« Loop me in » est un anglicisme de bureau très actuel, plus utilisé aujourd'hui à l'oral que « cc »."
+    },
+    {
+      "id": "work-3",
+      "cat": "work",
+      "fr": "On a pris du retard sur ce projet, il va falloir rattraper.",
+      "en": [
+        "We've fallen behind on this project, we'll need to catch up."
+      ],
+      "native": "We've fallen behind on this one, we're going to have to play catch-up.",
+      "formal": "We have fallen behind schedule on this project and will need to recover the lost time.",
+      "grammar": "« fall behind » (phrasal verb) au present perfect pour un retard qui a des conséquences actuelles.",
+      "vocab": "play catch-up = rattraper le retard (expression figée, du sport au business).",
+      "tip": "Le vocabulaire sportif (catch-up, kick off, touch base) est omniprésent dans l'anglais professionnel britannique."
+    },
+    {
+      "id": "work-4",
+      "cat": "work",
+      "fr": "Est-ce qu'on peut caler un point rapide cet après-midi ?",
+      "en": [
+        "Can we schedule a quick catch-up this afternoon?"
+      ],
+      "native": "Can we grab a quick catch-up this afternoon?",
+      "formal": "Would it be possible to arrange a brief meeting this afternoon?",
+      "grammar": "« grab » + nom = rendre une action rapide et informelle (grab a coffee, grab a catch-up).",
+      "vocab": "catch-up (nom) = petite réunion informelle pour faire le point.",
+      "tip": "« Grab » devant un nom d'action est un marqueur fort d'anglais oral décontracté, à réserver aux collègues proches."
+    },
+    {
+      "id": "work-5",
+      "cat": "work",
+      "fr": "Je suis débordé cette semaine, je ne pourrai pas assister à la réunion.",
+      "en": [
+        "I'm swamped this week, I won't be able to attend the meeting."
+      ],
+      "native": "I'm absolutely snowed under this week, I won't be able to make the meeting.",
+      "formal": "I am currently overwhelmed with work this week and will therefore be unable to attend the meeting.",
+      "grammar": "« won't be able to » = futur négatif de capacité (not + will + be able to).",
+      "vocab": "snowed under / swamped = submergé de travail.",
+      "tip": "« Make the meeting » (au lieu de « attend ») est la formule naturelle à l'oral pour dire qu'on sera présent."
+    },
+    {
+      "id": "work-6",
+      "cat": "work",
+      "fr": "Mon contrat d'alternance se termine en septembre.",
+      "en": [
+        "My apprenticeship contract ends in September."
+      ],
+      "native": "My apprenticeship wraps up in September.",
+      "formal": "My apprenticeship contract is due to expire in September.",
+      "grammar": "« is due to » + infinitif = évènement prévu/attendu à une date précise.",
+      "vocab": "wrap up = se terminer/conclure (informel, très utilisé pour projets et contrats).",
+      "tip": "« Apprenticeship » est le terme britannique standard pour « alternance » ; « work-study program » est plus américain."
+    },
+    {
+      "id": "interview-1",
+      "cat": "interview",
+      "fr": "Parlez-moi d'un défi que vous avez surmonté.",
+      "en": [
+        "Tell me about a challenge you overcame."
+      ],
+      "native": "So, tell me about a time you had to deal with a real challenge.",
+      "formal": "Could you describe a significant challenge you have successfully overcome?",
+      "grammar": "Past simple (overcame) car l'action est terminée et située dans le passé.",
+      "vocab": "overcome a challenge = surmonter un défi (irrégulier : overcome / overcame / overcome).",
+      "tip": "En entretien britannique, la structure STAR (Situation, Task, Action, Result) est implicitement attendue dans la réponse."
+    },
+    {
+      "id": "interview-2",
+      "cat": "interview",
+      "fr": "Je suis quelqu'un de très rigoureux et organisé.",
+      "en": [
+        "I'm a very thorough and organised person."
+      ],
+      "native": "I'd say I'm pretty on top of things, quite organised.",
+      "formal": "I would describe myself as a highly meticulous and well-organised individual.",
+      "grammar": "« I'd say » + attribut = façon polie et nuancée de se décrire sans paraître arrogant.",
+      "vocab": "on top of things = qui maîtrise/gère bien la situation (idiome très courant).",
+      "tip": "Les Britanniques évitent de se vanter directement ; « I'd say » ou « I like to think » adoucissent l'auto-évaluation."
+    },
+    {
+      "id": "interview-3",
+      "cat": "interview",
+      "fr": "Pourquoi voulez-vous quitter votre poste actuel ?",
+      "en": [
+        "Why do you want to leave your current position?"
+      ],
+      "native": "So what's making you want to move on from your current role?",
+      "formal": "May I ask what has prompted your decision to leave your current position?",
+      "grammar": "« what's making you want to » = structure causative (make + COD + verbe base), très courante à l'oral.",
+      "vocab": "move on from = passer à autre chose, quitter (connotation positive, pas négative).",
+      "tip": "« Move on » sonne plus positif que « leave » en entretien : ça montre une progression plutôt qu'une fuite."
+    },
+    {
+      "id": "interview-4",
+      "cat": "interview",
+      "fr": "Où vous voyez-vous dans cinq ans ?",
+      "en": [
+        "Where do you see yourself in five years?"
+      ],
+      "native": "Where do you reckon you'll be in five years' time?",
+      "formal": "Where do you envisage yourself professionally in five years' time?",
+      "grammar": "« in five years' time » = structure figée pour une durée future (« dans x temps »).",
+      "vocab": "envisage = envisager/se projeter (registre soutenu, très fréquent en entretien formel).",
+      "tip": "Cette question classique attend une réponse ambitieuse mais réaliste, jamais « I don't know »."
+    },
+    {
+      "id": "interview-5",
+      "cat": "interview",
+      "fr": "Je pense pouvoir apporter une réelle valeur ajoutée à votre équipe.",
+      "en": [
+        "I believe I can bring real added value to your team."
+      ],
+      "native": "I genuinely think I've got a lot to offer the team.",
+      "formal": "I am confident that I can make a meaningful contribution to your team.",
+      "grammar": "« I believe » + proposition = registre soutenu pour exprimer une conviction en entretien.",
+      "vocab": "have a lot to offer = avoir beaucoup à apporter, préféré à l'oral à « added value ».",
+      "tip": "« Added value » est un calque direct du français ; les natifs préfèrent « a lot to offer » ou « a real contribution »."
+    },
+    {
+      "id": "interview-6",
+      "cat": "interview",
+      "fr": "Avez-vous des questions à me poser ?",
+      "en": [
+        "Do you have any questions for me?"
+      ],
+      "native": "Anything you'd like to ask me before we wrap up?",
+      "formal": "Do you have any questions you would like to put to me?",
+      "grammar": "« anything you'd like to » = conditionnel poli (would like) introduisant une proposition ouverte.",
+      "vocab": "put a question to someone = poser une question à quelqu'un (plus soutenu que « ask »).",
+      "tip": "Poser au moins une question en retour est presque obligatoire culturellement : ne jamais répondre « no » sec."
+    },
+    {
+      "id": "restaurant-1",
+      "cat": "restaurant",
+      "fr": "On pourrait avoir une table pour deux, s'il vous plaît ?",
+      "en": [
+        "Could we get a table for two, please?"
+      ],
+      "native": "Could we grab a table for two, please?",
+      "formal": "Might we possibly be seated at a table for two?",
+      "grammar": "« Could we » = forme polie interrogative pour une demande.",
+      "vocab": "get/grab a table = obtenir une table (plus naturel à l'oral que « have »).",
+      "tip": "« Might we possibly » est très soutenu, presque théâtral, réservé aux restaurants gastronomiques."
+    },
+    {
+      "id": "restaurant-2",
+      "cat": "restaurant",
+      "fr": "Qu'est-ce que vous nous conseillez comme plat ?",
+      "en": [
+        "What would you recommend?"
+      ],
+      "native": "What would you go for, if you were us?",
+      "formal": "What dish would you recommend to us this evening?",
+      "grammar": "« What would you recommend » = conditionnel de politesse (would) pour demander un avis.",
+      "vocab": "go for = choisir/opter pour (informel, aussi utilisé pour les plats).",
+      "tip": "Demander l'avis du serveur (« if you were us ») crée une connivence appréciée dans les pubs et petits restaurants britanniques."
+    },
+    {
+      "id": "restaurant-3",
+      "cat": "restaurant",
+      "fr": "L'addition, s'il vous plaît, et est-ce qu'on peut payer séparément ?",
+      "en": [
+        "Could we have the bill, please, and can we split it?"
+      ],
+      "native": "Could we get the bill, please, and split it between us?",
+      "formal": "Might we have the bill, and would it be possible to pay separately?",
+      "grammar": "« split the bill » est une expression figée, jamais « divide the bill ».",
+      "vocab": "the bill = l'addition (UK) ; « the check » est la version américaine.",
+      "tip": "Au Royaume-Uni, on dit « bill », pas « check » : un signe distinctif d'anglais britannique vs américain."
+    },
+    {
+      "id": "restaurant-4",
+      "cat": "restaurant",
+      "fr": "Ce plat était délicieux, vraiment un régal.",
+      "en": [
+        "That dish was delicious, an absolute treat."
+      ],
+      "native": "That was gorgeous, honestly, proper lovely.",
+      "formal": "That dish was truly exquisite, a genuine culinary delight.",
+      "grammar": "Adjectifs intensifiés par « absolute/proper/truly » plutôt que « very » — nuance de registre oral.",
+      "vocab": "proper = vraiment/authentiquement (intensificateur très britannique et familier).",
+      "tip": "« Gorgeous » et « proper » pour parler de nourriture sont typiquement anglais, presque jamais utilisés ainsi en anglais américain."
+    },
+    {
+      "id": "restaurant-5",
+      "cat": "restaurant",
+      "fr": "Je suis allergique aux fruits à coque, est-ce qu'il y en a dans ce plat ?",
+      "en": [
+        "I'm allergic to nuts, is there any in this dish?"
+      ],
+      "native": "I've got a nut allergy, does this dish have any in it?",
+      "formal": "I have an allergy to nuts; could you confirm whether this dish contains any?",
+      "grammar": "« have got » = variante britannique très courante de « have » pour la possession/l'état.",
+      "vocab": "nuts = fruits à coque (terme générique en anglais courant).",
+      "tip": "Signaler une allergie est pris très au sérieux au Royaume-Uni ; le personnel demande souvent de préciser directement au chef."
+    },
+    {
+      "id": "restaurant-6",
+      "cat": "restaurant",
+      "fr": "On va prendre la même chose, ça a l'air très bon.",
+      "en": [
+        "We'll have the same, it looks really good."
+      ],
+      "native": "We'll both have the same, that looks lovely.",
+      "formal": "We would like to order the same dish; it appears excellent.",
+      "grammar": "« will » pour une décision prise sur le moment (futur spontané), pas « going to ».",
+      "vocab": "lovely = mot-valise britannique pour qualifier positivement presque tout, y compris la nourriture.",
+      "tip": "« Lovely » n'est pas réservé au registre enfantin : les adultes britanniques l'utilisent énormément, tous contextes confondus."
+    },
+    {
+      "id": "humor-1",
+      "cat": "humor",
+      "fr": "Je plaisante, évidemment, ne le prends pas mal.",
+      "en": [
+        "I'm joking, obviously, don't take it the wrong way."
+      ],
+      "native": "I'm only messing, don't take it to heart.",
+      "formal": "I am, of course, jesting; please do not misinterpret my remark.",
+      "grammar": "« don't » + base verbale = impératif négatif.",
+      "vocab": "mess (verbe informel) = plaisanter/faire l'imbécile ; take something to heart = mal le prendre.",
+      "tip": "« I'm only messing » est extrêmement courant à l'oral en Angleterre, surtout dans le nord, pour désamorcer une blague."
+    },
+    {
+      "id": "humor-2",
+      "cat": "humor",
+      "fr": "Il a un humour assez pince-sans-rire, il faut s'habituer.",
+      "en": [
+        "He's got a pretty dry sense of humour, you have to get used to it."
+      ],
+      "native": "He's proper dry, takes a while to click that he's joking.",
+      "formal": "He possesses a rather dry wit which requires some familiarisation.",
+      "grammar": "« have got » + nom = possession/caractéristique (variante britannique de « have »).",
+      "vocab": "dry humour = humour pince-sans-rire, notion centrale de l'humour britannique.",
+      "tip": "« Dry humour » : dire des choses absurdes ou ironiques avec un visage totalement neutre, c'est l'essence de l'humour anglais."
+    },
+    {
+      "id": "humor-3",
+      "cat": "humor",
+      "fr": "Attends, tu es sérieux là ou tu me fais marcher ?",
+      "en": [
+        "Wait, are you being serious or are you having me on?"
+      ],
+      "native": "Hang on, are you being serious or winding me up?",
+      "formal": "Excuse me, are you being serious, or are you attempting to deceive me?",
+      "grammar": "« are you being » (be + -ing) pour un comportement temporaire/actuel, différent de « are you ».",
+      "vocab": "have someone on / wind someone up = faire marcher quelqu'un, se moquer gentiment.",
+      "tip": "« Wind someone up » est une expression essentielle de l'humour anglais quotidien, à connaître absolument."
+    },
+    {
+      "id": "humor-4",
+      "cat": "humor",
+      "fr": "C'était une blague nulle, mais bon, on a bien ri quand même.",
+      "en": [
+        "It was a terrible joke, but hey, we had a good laugh anyway."
+      ],
+      "native": "That joke was proper awful, but we still had a right laugh.",
+      "formal": "It was, admittedly, a rather poor joke; nonetheless, we found it amusing.",
+      "grammar": "« we had a laugh » = structure figée (have + a + nom d'action) très fréquente à l'oral.",
+      "vocab": "a right laugh = un bon fou rire (« right » comme intensificateur ici, pas « droite »).",
+      "tip": "« Right » comme intensificateur (« a right laugh », « a right mess ») est typiquement britannique et surprend souvent les apprenants."
+    },
+    {
+      "id": "humor-5",
+      "cat": "humor",
+      "fr": "Tu me détruis, littéralement, à chaque partie d'échecs.",
+      "en": [
+        "You destroy me, literally, every single chess game."
+      ],
+      "native": "You absolutely wreck me at chess, every single time, mate.",
+      "formal": "You consistently and decisively defeat me in every game of chess.",
+      "grammar": "« every single » + nom = insistance/emphase, plus fort que « every ».",
+      "vocab": "wreck someone (informel/jeu) = écraser quelqu'un à un jeu, sans violence réelle.",
+      "tip": "Dans le langage des jeux et du sport, « wreck », « destroy », « smash » s'utilisent au sens figuré très couramment entre amis."
+    },
+    {
+      "id": "humor-6",
+      "cat": "humor",
+      "fr": "Il a un sacré sens de la répartie, impossible de le coincer.",
+      "en": [
+        "He's got a real quick wit, impossible to catch him out."
+      ],
+      "native": "He's proper quick-witted, you just can't catch him out.",
+      "formal": "He possesses remarkable quick-wittedness; it is virtually impossible to outmanoeuvre him verbally.",
+      "grammar": "« can't » + base verbale = incapacité, ici au sens figuré (impossible de le piéger).",
+      "vocab": "catch someone out = prendre quelqu'un en défaut/le piéger dans une conversation.",
+      "tip": "« Quick-witted » est le compliment typique pour l'humour britannique : valorise la répartie plus que la blague préparée."
+    },
+    {
+      "id": "wedding-1",
+      "cat": "wedding",
+      "fr": "Quelle est la tenue exigée pour le mariage, plutôt habillée ou décontractée ?",
+      "en": [
+        "What's the dress code for the wedding, quite formal or more casual?"
+      ],
+      "native": "What's the dress code for the do, smart or more relaxed?",
+      "formal": "Could you clarify the required dress code for the wedding ceremony?",
+      "grammar": "« What's » = contraction de « What is », courante à l'oral même en registre poli.",
+      "vocab": "the do (informel, britannique) = l'évènement/la fête (mariage, anniversaire, etc).",
+      "tip": "« The do » est un mot très britannique et familier pour un évènement social ; presque jamais utilisé aux États-Unis."
+    },
+    {
+      "id": "wedding-2",
+      "cat": "wedding",
+      "fr": "On m'a demandé d'être témoin, je suis extrêmement honoré.",
+      "en": [
+        "I've been asked to be best man, I'm extremely honoured."
+      ],
+      "native": "I've been asked to be best man, I'm chuffed to bits, honestly.",
+      "formal": "I have been asked to serve as best man, and I am deeply honoured.",
+      "grammar": "Passive voice (I've been asked) car on met l'accent sur l'action reçue, pas sur qui a demandé.",
+      "vocab": "chuffed to bits = extrêmement content/fier (expression britannique affectueuse).",
+      "tip": "« Best man » (témoin de l'époux) et « maid of honour » (témoin de l'épouse) sont les termes consacrés, sans traduction littérale de « témoin »."
+    },
+    {
+      "id": "wedding-3",
+      "cat": "wedding",
+      "fr": "La mariée était resplendissante, tout le monde en parlait.",
+      "en": [
+        "The bride looked absolutely stunning, everyone was talking about it."
+      ],
+      "native": "The bride looked an absolute picture, everyone was going on about it.",
+      "formal": "The bride appeared truly resplendent, and was the subject of much admiration.",
+      "grammar": "Past simple (looked) + adverbe intensif (absolutely) pour une description forte.",
+      "vocab": "a picture / a vision = très belle (expression figée pour une apparence exceptionnelle).",
+      "tip": "« Go on about something » (informel) = parler sans arrêt de quelque chose, très naturel pour raconter un mariage entre amis."
+    },
+    {
+      "id": "wedding-4",
+      "cat": "wedding",
+      "fr": "Je porterai un costume trois pièces, ça devrait convenir non ?",
+      "en": [
+        "I'll wear a three-piece suit, that should be appropriate, right?"
+      ],
+      "native": "I'll wear a three-piece suit, that should do the trick, yeah?",
+      "formal": "I intend to wear a three-piece suit; I trust this will be suitable attire.",
+      "grammar": "Question tag (« right? »/« yeah? ») ajoutée en fin de phrase pour chercher une confirmation informelle.",
+      "vocab": "do the trick = faire l'affaire/convenir parfaitement.",
+      "tip": "Les question tags informels comme « yeah? », « right? » remplacent souvent les vrais tags grammaticaux à l'oral détendu."
+    },
+    {
+      "id": "wedding-5",
+      "cat": "wedding",
+      "fr": "Le discours du père de la mariée nous a tous fait pleurer.",
+      "en": [
+        "The father of the bride's speech made us all cry."
+      ],
+      "native": "The father-of-the-bride speech had us all in tears.",
+      "formal": "The speech delivered by the father of the bride moved everyone to tears.",
+      "grammar": "« made us cry » = structure causative (make + COD + base verbale), essentielle en anglais.",
+      "vocab": "have someone in tears = faire pleurer quelqu'un (émotion forte, positive ou négative).",
+      "tip": "Les discours de mariage suivent un ordre traditionnel au Royaume-Uni : père de la mariée, marié, puis best man en dernier (souvent le plus comique)."
+    },
+    {
+      "id": "wedding-6",
+      "cat": "wedding",
+      "fr": "On doit confirmer notre présence avant la fin du mois.",
+      "en": [
+        "We need to RSVP by the end of the month."
+      ],
+      "native": "We need to get our RSVP in before the end of the month.",
+      "formal": "We are required to confirm our attendance prior to the end of the month.",
+      "grammar": "« RSVP » utilisé comme verbe en anglais courant, emprunté au français « répondez s'il vous plaît ».",
+      "vocab": "RSVP = confirmer sa présence (emprunt direct au français, mais utilisé ainsi seulement en anglais).",
+      "tip": "Ironie amusante : RSVP vient du français, mais les Britanniques l'utilisent bien plus activement à l'oral que les Français eux-mêmes."
+    },
+    {
+      "id": "smalltalk-1",
+      "cat": "smalltalk",
+      "fr": "Quel sale temps aujourd'hui, hein ?",
+      "en": [
+        "Awful weather today, isn't it?"
+      ],
+      "native": "Shocking weather today, isn't it?",
+      "formal": "The weather is rather unpleasant today, wouldn't you agree?",
+      "grammar": "Question tag « isn't it? » après une affirmation, structure typique du small talk anglais.",
+      "vocab": "shocking (informel, UK) = très mauvais, terrible.",
+      "tip": "Parler de la météo est LE small talk national britannique par excellence, presque un rituel social obligatoire."
+    },
+    {
+      "id": "smalltalk-2",
+      "cat": "smalltalk",
+      "fr": "Ça va, le boulot en ce moment ?",
+      "en": [
+        "How's work going at the moment?"
+      ],
+      "native": "Alright, how's things at work then?",
+      "formal": "How are things progressing at work currently?",
+      "grammar": "Present continuous (is going) pour une situation en cours, temporaire.",
+      "vocab": "« alright » en début de phrase = simple salutation informelle, n'attend pas de réponse détaillée.",
+      "tip": "« Alright? » seul est une salutation, pas une vraie question ; répondre « yeah, you alright? » suffit, jamais un long récit."
+    },
+    {
+      "id": "smalltalk-3",
+      "cat": "smalltalk",
+      "fr": "Désolé pour le retard, les transports étaient un cauchemar.",
+      "en": [
+        "Sorry I'm late, the trains were a nightmare."
+      ],
+      "native": "Sorry I'm late, the trains were an absolute nightmare.",
+      "formal": "My apologies for the delay; public transport was severely disrupted.",
+      "grammar": "« Sorry I'm late » = présent simple pour un état actuel (je suis en retard maintenant).",
+      "vocab": "a nightmare (figuré) = une situation pénible/catastrophique.",
+      "tip": "Les Britanniques s'excusent énormément et pour presque tout, même sans faute réelle : un réflexe social, pas un vrai aveu de tort."
+    },
+    {
+      "id": "smalltalk-4",
+      "cat": "smalltalk",
+      "fr": "On devrait se revoir bientôt, ça m'a fait plaisir.",
+      "en": [
+        "We should catch up again soon, it was great to see you."
+      ],
+      "native": "We should catch up again soon, lovely seeing you.",
+      "formal": "We ought to arrange to meet again before long; it was a pleasure to see you.",
+      "grammar": "« should » = suggestion polie pour une intention future non contraignante.",
+      "vocab": "catch up (verbe) = se retrouver pour discuter/prendre des nouvelles.",
+      "tip": "Cette phrase est souvent dite en partant sans réelle intention de fixer une date — une formule de politesse, pas un engagement ferme."
+    },
+    {
+      "id": "smalltalk-5",
+      "cat": "smalltalk",
+      "fr": "Tu as vu le match hier soir ? Quelle fin de match incroyable.",
+      "en": [
+        "Did you watch the match last night? What an incredible finish."
+      ],
+      "native": "Did you catch the match last night? What a finish, eh?",
+      "formal": "Did you happen to watch yesterday's match? It was an extraordinary conclusion.",
+      "grammar": "« What + a/an + nom » = structure exclamative anglaise (What a finish!, What a shame!).",
+      "vocab": "catch a match = regarder un match (informel, très courant pour le sport et la télé).",
+      "tip": "Terminer une phrase par « eh? » est un tic très britannique (surtout au nord), équivalent du « hein » français."
+    },
+    {
+      "id": "smalltalk-6",
+      "cat": "smalltalk",
+      "fr": "Ça fait un bail qu'on ne s'est pas vus, tu deviens quoi ?",
+      "en": [
+        "It's been ages since we last saw each other, what have you been up to?"
+      ],
+      "native": "Long time no see, what have you been up to lately?",
+      "formal": "It has been quite some time since our last meeting; how have you been keeping?",
+      "grammar": "« what have you been up to » = present perfect continuous idiomatique pour des activités récentes.",
+      "vocab": "long time no see = ça fait longtemps (expression figée informelle, grammaticalement atypique mais consacrée par l'usage).",
+      "tip": "« Long time no see » vient historiquement du pidgin anglais, désormais totalement intégré à l'anglais courant informel."
+    },
+    {
+      "id": "politics-1",
+      "cat": "politics",
+      "fr": "Je ne suis pas d'accord avec cette politique, mais je comprends le raisonnement.",
+      "en": [
+        "I don't agree with this policy, but I understand the reasoning."
+      ],
+      "native": "I'm not with this policy, personally, but I get where they're coming from.",
+      "formal": "I disagree with this policy; however, I do understand the underlying rationale.",
+      "grammar": "« don't agree » vs « disagree » : les deux existent, « disagree » est plus soutenu et direct.",
+      "vocab": "get where someone is coming from = comprendre le point de vue de quelqu'un.",
+      "tip": "En anglais britannique, on nuance souvent son désaccord (« I see your point, but... ») avant de contredire, par politesse sociale."
+    },
+    {
+      "id": "politics-2",
+      "cat": "politics",
+      "fr": "À mon avis, ce débat est bien plus nuancé qu'on ne le pense.",
+      "en": [
+        "In my opinion, this debate is far more nuanced than people think."
+      ],
+      "native": "If you ask me, this whole debate is way more nuanced than people make out.",
+      "formal": "In my view, this debate is considerably more nuanced than is generally assumed.",
+      "grammar": "« far more » + adjectif = comparatif renforcé.",
+      "vocab": "make something out (to be) = présenter quelque chose comme étant, souvent de façon exagérée.",
+      "tip": "« If you ask me » introduit une opinion personnelle de façon plus décontractée que « in my opinion »."
+    },
+    {
+      "id": "politics-3",
+      "cat": "politics",
+      "fr": "Je pense que chacun devrait pouvoir voter selon ses convictions, sans jugement.",
+      "en": [
+        "I think everyone should be able to vote according to their convictions, without judgement."
+      ],
+      "native": "I reckon people should just vote how they see fit, no judgement.",
+      "formal": "I believe that every individual should be entitled to vote in accordance with their own convictions, free from judgement.",
+      "grammar": "« should be able to » = capacité/droit modéré, différent de « must » (obligation) ou « can » (capacité brute).",
+      "vocab": "see fit = juger bon, estimer approprié.",
+      "tip": "Le vote reste un sujet sensible au Royaume-Uni ; les Britanniques évitent souvent d'affirmer leurs opinions politiques trop frontalement en public."
+    },
+    {
+      "id": "politics-4",
+      "cat": "politics",
+      "fr": "Les médias ont tendance à polariser les opinions, à mon sens.",
+      "en": [
+        "The media tend to polarise opinions, in my view."
+      ],
+      "native": "The media's always stirring things up and polarising opinions, if you ask me.",
+      "formal": "In my view, the media tend to have a polarising effect on public opinion.",
+      "grammar": "« media » est traité comme pluriel en anglais soutenu (« media tend to »), bien que « the media is » soit toléré à l'oral.",
+      "vocab": "stir things up = envenimer/attiser les tensions.",
+      "tip": "L'orthographe « polarise » (avec un s) est britannique ; l'anglais américain écrit « polarize » (avec un z)."
+    },
+    {
+      "id": "politics-5",
+      "cat": "politics",
+      "fr": "Sur ce sujet, je préfère rester prudent, c'est complexe.",
+      "en": [
+        "On this topic, I'd rather stay cautious, it's complex."
+      ],
+      "native": "I'll stay on the fence on this one, to be honest, it's a minefield.",
+      "formal": "On this particular subject, I would prefer to remain cautious, given its complexity.",
+      "grammar": "« I'd rather » + base verbale = préférence exprimée sans « to » après rather.",
+      "vocab": "stay/sit on the fence = rester neutre ; a minefield = un sujet très délicat.",
+      "tip": "« Sit on the fence » est LA façon anglaise de dire poliment qu'on évite un sujet politique clivant en société."
+    },
+    {
+      "id": "politics-6",
+      "cat": "politics",
+      "fr": "Je pense que le débat sur le climat devrait dépasser les clivages partisans.",
+      "en": [
+        "I think the climate debate should go beyond party lines."
+      ],
+      "native": "I reckon climate should be above party politics, honestly.",
+      "formal": "In my opinion, the climate debate ought to transcend partisan divisions.",
+      "grammar": "« ought to » = variante soutenue de « should », registre plus littéraire.",
+      "vocab": "party lines = clivages partisans, positions dictées par le parti.",
+      "tip": "« Cross/go beyond party lines » est une expression clé du débat politique anglophone, très utilisée dans les médias britanniques."
+    },
+    {
+      "id": "worldview-1",
+      "cat": "worldview",
+      "fr": "Je crois profondément que chacun mérite une seconde chance.",
+      "en": [
+        "I truly believe everyone deserves a second chance."
+      ],
+      "native": "I honestly believe everyone deserves a second chance, no matter what.",
+      "formal": "I hold a deep conviction that every individual deserves a second opportunity.",
+      "grammar": "« deserve » + nom, jamais suivi de « to » dans ce sens direct (deserve a chance, pas deserve to a chance).",
+      "vocab": "no matter what = quoi qu'il arrive, en toute circonstance.",
+      "tip": "« Hold a conviction » est très soutenu, réservé à l'écrit ; à l'oral, « believe deeply » suffit largement."
+    },
+    {
+      "id": "worldview-2",
+      "cat": "worldview",
+      "fr": "Pour moi, la réussite ne se mesure pas qu'à l'argent.",
+      "en": [
+        "To me, success isn't just measured by money."
+      ],
+      "native": "For me, success isn't all about the money, you know?",
+      "formal": "In my view, success cannot be measured by financial means alone.",
+      "grammar": "« isn't just » = négation restrictive (ce n'est pas seulement).",
+      "vocab": "isn't all about = ne se résume pas à.",
+      "tip": "« You know? » en fin de phrase est un tic verbal anglais pour chercher l'adhésion de l'interlocuteur, sans réelle attente de réponse."
+    },
+    {
+      "id": "worldview-3",
+      "cat": "worldview",
+      "fr": "Je pense que voyager change vraiment notre vision du monde.",
+      "en": [
+        "I think travelling really changes your worldview."
+      ],
+      "native": "Travelling honestly changes the way you see the world, big time.",
+      "formal": "I believe that travel profoundly alters one's perception of the world.",
+      "grammar": "« the way you see the world » = proposition relative sans pronom relatif explicite (that/which omis).",
+      "vocab": "big time (informel) = énormément, intensificateur oral.",
+      "tip": "« Worldview » est assez soutenu ; à l'oral, les Britanniques disent plus naturellement « the way you see things »."
+    },
+    {
+      "id": "worldview-4",
+      "cat": "worldview",
+      "fr": "On devrait tous essayer d'être un peu plus indulgents avec les autres.",
+      "en": [
+        "We should all try to be a bit more understanding towards others."
+      ],
+      "native": "We should all try and cut people a bit more slack, really.",
+      "formal": "We ought all to strive to be somewhat more forbearing towards others.",
+      "grammar": "« try and » + verbe (au lieu de « try to ») est très courant à l'oral britannique, bien que discuté grammaticalement.",
+      "vocab": "cut someone some slack = être indulgent envers quelqu'un.",
+      "tip": "« Try and » remplace souvent « try to » à l'oral britannique informel ; à l'écrit soutenu, on garde « try to »."
+    },
+    {
+      "id": "worldview-5",
+      "cat": "worldview",
+      "fr": "Je ne crois pas au hasard, je pense que tout arrive pour une raison.",
+      "en": [
+        "I don't believe in chance, I think everything happens for a reason."
+      ],
+      "native": "I'm not really one for coincidence, I think everything happens for a reason.",
+      "formal": "I do not believe in chance; I hold that all events occur for a purpose.",
+      "grammar": "« happens for a reason » = présent simple pour une vérité générale/croyance durable.",
+      "vocab": "not one for (something) = ne pas être du genre à croire/aimer quelque chose.",
+      "tip": "« Everything happens for a reason » est une expression figée universelle en anglais, presque un cliché reconnu comme tel."
+    },
+    {
+      "id": "worldview-6",
+      "cat": "worldview",
+      "fr": "Ce qui compte vraiment pour moi, c'est d'être aligné avec mes valeurs.",
+      "en": [
+        "What really matters to me is staying true to my values."
+      ],
+      "native": "What really matters to me is just staying true to myself, honestly.",
+      "formal": "What truly matters to me is remaining consistent with my personal values.",
+      "grammar": "« What + proposition + matters » = structure clivée anglaise (ce qui... c'est...) pour mettre en relief.",
+      "vocab": "stay true to (something/someone) = rester fidèle/cohérent à ses valeurs ou à soi-même.",
+      "tip": "« Stay true to yourself » est très valorisée culturellement dans le monde anglophone, liée à l'authenticité individuelle."
+    },
+    {
+      "id": "studies-1",
+      "cat": "studies",
+      "fr": "Je prépare un diplôme en développement d'applications en alternance.",
+      "en": [
+        "I'm doing a degree in application development as an apprentice."
+      ],
+      "native": "I'm doing an apprenticeship degree in app development, basically.",
+      "formal": "I am currently pursuing a qualification in application development through an apprenticeship programme.",
+      "grammar": "Present continuous (I'm doing) pour une action en cours sur une période prolongée.",
+      "vocab": "pursue a qualification = préparer/poursuivre un diplôme (registre soutenu).",
+      "tip": "« Degree » désigne un diplôme universitaire ; pour un diplôme professionnel, « qualification » est parfois plus précis."
+    },
+    {
+      "id": "studies-2",
+      "cat": "studies",
+      "fr": "J'ai un partiel important la semaine prochaine, je révise à fond.",
+      "en": [
+        "I've got an important exam next week, I'm revising hard."
+      ],
+      "native": "I've got a big exam next week, I'm cramming like mad.",
+      "formal": "I have a significant examination next week and am revising extensively.",
+      "grammar": "« have got » + nom (variante britannique de « have ») pour la possession/l'état.",
+      "vocab": "cram (informel) = bachoter/réviser intensivement à la dernière minute.",
+      "tip": "« Cram » a une connotation de révision de dernière minute, alors que « revise » reste neutre selon la situation réelle."
+    },
+    {
+      "id": "studies-3",
+      "cat": "studies",
+      "fr": "Mon prof m'a donné un excellent retour sur mon mémoire.",
+      "en": [
+        "My teacher gave me excellent feedback on my dissertation."
+      ],
+      "native": "My tutor gave me really good feedback on my dissertation, actually.",
+      "formal": "My supervisor provided excellent feedback regarding my dissertation.",
+      "grammar": "« gave » (past simple irrégulier give/gave/given) car action ponctuelle et terminée.",
+      "vocab": "tutor/supervisor = enseignant référent, encadrant (contexte universitaire britannique).",
+      "tip": "Au Royaume-Uni, « tutor » désigne souvent l'enseignant référent à l'université, pas un simple répétiteur comme en français."
+    },
+    {
+      "id": "studies-4",
+      "cat": "studies",
+      "fr": "Je dois rendre mon devoir avant la date limite, sinon je suis pénalisé.",
+      "en": [
+        "I have to hand in my assignment before the deadline, otherwise I'll be penalised."
+      ],
+      "native": "I've got to hand my assignment in before the deadline or I'll get marked down.",
+      "formal": "I am required to submit my assignment prior to the deadline, failing which I will incur a penalty.",
+      "grammar": "« hand in » (phrasal verb séparable) : « hand it in » est aussi possible avec un pronom.",
+      "vocab": "get marked down = être pénalisé sur sa note.",
+      "tip": "« Failing which » est une formule très soutenue, quasi juridique, à réserver à l'écrit formel uniquement."
+    },
+    {
+      "id": "studies-5",
+      "cat": "studies",
+      "fr": "On a un projet de groupe à rendre, et franchement, c'est compliqué à organiser.",
+      "en": [
+        "We've got a group project to hand in, and honestly, it's tricky to organise."
+      ],
+      "native": "We've got a group project due, and honestly, it's a nightmare to organise.",
+      "formal": "We have a group project to submit, and organising it has proven rather challenging.",
+      "grammar": "« due » (adjectif) après un nom = à rendre/à échéance (a project due, an assignment due).",
+      "vocab": "tricky = délicat/compliqué (informel, plus léger que « difficult »).",
+      "tip": "« Due » placé après le nom (a project due Friday) est une structure très naturelle pour parler de deadlines."
+    },
+    {
+      "id": "studies-6",
+      "cat": "studies",
+      "fr": "J'aimerais approfondir mes connaissances en intelligence artificielle après mes études.",
+      "en": [
+        "I'd like to deepen my knowledge of artificial intelligence after my studies."
+      ],
+      "native": "I'd love to really get stuck into AI once I'm done with my studies.",
+      "formal": "I would like to further develop my expertise in artificial intelligence upon completion of my studies.",
+      "grammar": "« once I'm done with » = subordonnée temporelle informelle (une fois que j'aurai fini).",
+      "vocab": "get stuck into (something) = se plonger à fond dans quelque chose.",
+      "tip": "« Get stuck into » est une expression britannique enthousiaste, parfaite pour parler de passions ou projets personnels."
+    }
+  ]
+}

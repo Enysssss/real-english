@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jouer entre amis — Carnet d'anglais</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style-shared.css">
+<style>
+  header{ text-align:center; margin-bottom:28px; }
+  .eyebrow{
+    font-family:"IBM Plex Mono", monospace;
+    letter-spacing:.22em; font-size:11px;
+    color:var(--brass-light); text-transform:uppercase; margin-bottom:10px;
+  }
+  h1{
+    font-family:"Special Elite", monospace; font-weight:400;
+    font-size:clamp(26px,5vw,38px); margin:0 0 10px; color:#f6efd9; line-height:1.15;
+  }
+  .home-link{ display:inline-block; margin-top:14px; font-size:12.5px; color:#b9c3d1; }
+
+  .card{
+    background:rgba(241,233,210,.05);
+    border:1px solid rgba(241,233,210,.15);
+    border-radius:var(--radius);
+    padding:24px 26px;
+    margin-bottom:18px;
+  }
+  .card h2{
+    font-family:"Special Elite", monospace; font-weight:400;
+    font-size:18px; margin:0 0 14px; color:#f6efd9;
+  }
+  .card input, .card textarea{
+    width:100%; background:rgba(241,233,210,.08);
+    border:1px solid rgba(241,233,210,.22); border-radius:6px;
+    padding:10px 12px; color:var(--paper); font-family:"IBM Plex Sans", sans-serif;
+    font-size:14px; margin-bottom:10px;
+  }
+  .card textarea{ min-height:90px; resize:vertical; }
+  .card input::placeholder, .card textarea::placeholder{ color:#8b95a6; }
+
+  .btn-primary{
+    background:var(--brass); color:#1c1305; border:none;
+    padding:11px 20px; border-radius:6px; font-weight:600; font-size:14.5px;
+    cursor:pointer; width:100%;
+  }
+  .btn-primary:hover{ background:var(--brass-light); }
+
+  .error-box{ color:var(--bad); font-size:13px; min-height:18px; margin-top:8px; }
+  .muted{ color:#a9b3c2; font-size:13px; }
+
+  .code-display{
+    font-family:"IBM Plex Mono", monospace; font-size:22px; letter-spacing:.1em;
+    color:var(--brass-light); margin-bottom:6px;
+  }
+  .player-list{ list-style:none; padding:0; margin:12px 0 18px; }
+  .player-list li{
+    padding:8px 10px; border-bottom:1px solid rgba(241,233,210,.1); font-size:14px;
+  }
+
+  .round-label{
+    font-family:"IBM Plex Mono", monospace; font-size:12px; letter-spacing:.06em;
+    color:var(--brass-light); text-transform:uppercase; margin-bottom:10px;
+  }
+  .fr-phrase{
+    font-family:"Source Serif 4", serif; font-size:clamp(20px,3.2vw,26px);
+    line-height:1.4; color:#f6efd9; margin-bottom:16px;
+  }
+  .timer{
+    font-family:"IBM Plex Mono", monospace; font-size:28px; color:var(--red);
+    margin-bottom:16px;
+  }
+
+  .ref-answers{
+    background:rgba(241,233,210,.06); border-radius:6px; padding:12px 14px; margin-bottom:14px;
+  }
+  .ref-answers .label, .player-answer .label{
+    font-family:"IBM Plex Mono", monospace; font-size:11px; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--blue); display:block; margin-bottom:4px;
+  }
+  .player-answer{ margin-bottom:16px; }
+  .answer-text{ font-size:16px; color:#f6efd9; }
+
+  .grade-buttons{ display:flex; gap:10px; }
+  .btn-grade{
+    flex:1; padding:12px 8px; border-radius:6px; border:none; font-weight:600;
+    font-size:14px; cursor:pointer; color:#fff;
+  }
+  .btn-grade.ok{ background:var(--ok); }
+  .btn-grade.warn{ background:var(--warn); }
+  .btn-grade.bad{ background:var(--bad); }
+  .btn-grade:hover{ filter:brightness(1.1); }
+
+  .grade-result{
+    font-family:"Special Elite", monospace; font-size:22px; text-align:center;
+    padding:14px; border-radius:6px; margin-bottom:14px;
+  }
+  .grade-result.grade-oui{ background:rgba(76,122,91,.25); color:#8fd6a5; }
+  .grade-result.grade-presque{ background:rgba(193,122,46,.25); color:#f0b876; }
+  .grade-result.grade-non{ background:rgba(164,68,68,.25); color:#f0a0a0; }
+
+  .leaderboard{ list-style:none; padding:0; margin:0 0 18px; counter-reset:none; }
+  .leaderboard li{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 12px; border-bottom:1px solid rgba(241,233,210,.1); font-size:15px;
+  }
+  .leaderboard .rank{ font-family:"IBM Plex Mono", monospace; color:var(--brass-light); margin-right:10px; }
+  .leaderboard .score{ font-weight:600; color:#f6efd9; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Carnet de traduction — mode multijoueur</div>
+    <h1>Jouer entre amis</h1>
+    <a class="home-link" href="/">← retour au carnet</a>
+  </header>
+
+  <div id="app"></div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+(function(){
+  const socket = io();
+  const app = document.getElementById('app');
+  const STORAGE_KEY = 'kculture-session';
+
+  let me = { code: null, name: null, playerId: null, isHost: false };
+  let state = { screen: 'home' };
+  let countdownInterval = null;
+
+  function saveMe(){ sessionStorage.setItem(STORAGE_KEY, JSON.stringify(me)); }
+  function loadMe(){ try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY)); } catch(e){ return null; } }
+  function clearMe(){ sessionStorage.removeItem(STORAGE_KEY); me = { code:null, name:null, playerId:null, isHost:false }; }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function showError(msg){
+    const box = document.getElementById('errorBox');
+    if (box) box.textContent = msg;
+  }
+
+  function applySnapshot(snapshot){
+    if (!snapshot) return;
+    if (snapshot.phase === 'lobby'){
+      state = { screen:'lobby', hostName: snapshot.hostName, players: snapshot.players };
+    } else if (snapshot.phase === 'question'){
+      state = { screen:'question', ...snapshot };
+    } else if (snapshot.phase === 'review'){
+      state = { screen:'review', ...snapshot };
+    } else if (snapshot.phase === 'finished'){
+      state = { screen:'finished', leaderboard: snapshot.leaderboard };
+    }
+    render();
+  }
+
+  socket.on('session:update', (payload) => {
+    if (state.screen === 'lobby' || state.screen === 'home'){
+      state = { screen:'lobby', hostName: payload.hostName, players: payload.players };
+      render();
+    }
+  });
+
+  socket.on('round:start', (payload) => {
+    state = { screen:'question', ...payload };
+    render();
+  });
+
+  socket.on('review:show', (payload) => {
+    state = { screen:'review', ...payload };
+    render();
+  });
+
+  socket.on('review:graded', (payload) => {
+    if (state.screen === 'review' && state.roundIndex === payload.roundIndex && state.playerId === payload.playerId){
+      state.grade = payload.grade;
+      render();
+    }
+  });
+
+  socket.on('game:finished', (payload) => {
+    state = { screen:'finished', leaderboard: payload.leaderboard };
+    render();
+  });
+
+  function render(){
+    clearInterval(countdownInterval);
+    if (state.screen === 'home') renderHome();
+    else if (state.screen === 'lobby') renderLobby();
+    else if (state.screen === 'question') renderQuestion();
+    else if (state.screen === 'review') renderReview();
+    else if (state.screen === 'finished') renderFinished();
+  }
+
+  function renderHome(){
+    app.innerHTML = `
+      <div class="card">
+        <h2>Créer une partie</h2>
+        <input id="hostNameInput" placeholder="Ton pseudo (chef de partie)">
+        <button id="createBtn" class="btn-primary">Créer</button>
+      </div>
+      <div class="card">
+        <h2>Rejoindre une partie</h2>
+        <input id="joinCodeInput" placeholder="Code (ex: K7QP)" maxlength="4">
+        <input id="joinNameInput" placeholder="Ton pseudo">
+        <button id="joinBtn" class="btn-primary">Rejoindre</button>
+      </div>
+      <div id="errorBox" class="error-box"></div>
+    `;
+    document.getElementById('createBtn').onclick = () => {
+      const hostName = document.getElementById('hostNameInput').value.trim();
+      if (!hostName) return showError('Entre un pseudo.');
+      socket.emit('session:create', { hostName }, (res) => {
+        if (res.error) return showError(res.error);
+        me = { code: res.code, name: hostName, playerId: null, isHost: true };
+        saveMe();
+        state = { screen:'lobby', hostName, players: [] };
+        render();
+      });
+    };
+    document.getElementById('joinBtn').onclick = () => {
+      const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+      const name = document.getElementById('joinNameInput').value.trim();
+      if (!code || !name) return showError('Renseigne le code et ton pseudo.');
+      socket.emit('session:join', { code, name }, (res) => {
+        if (res.error) return showError(res.error);
+        me = { code, name, playerId: res.playerId, isHost: false };
+        saveMe();
+        applySnapshot(res.snapshot);
+      });
+    };
+  }
+
+  function renderLobby(){
+    const isHost = me.isHost;
+    const players = state.players || [];
+    app.innerHTML = `
+      <div class="card">
+        <div class="code-display">Code : <strong>${escapeHtml(me.code || '')}</strong></div>
+        <div class="muted">Chef : ${escapeHtml(state.hostName || '')}</div>
+        <h2 style="margin-top:18px;">Joueurs (${players.length})</h2>
+        <ul class="player-list">
+          ${players.map(p => `<li>${escapeHtml(p.name)}${p.connected ? '' : ' (déconnecté)'}</li>`).join('') || '<li class="muted">En attente de joueurs…</li>'}
+        </ul>
+        ${isHost
+          ? `<button id="startBtn" class="btn-primary">Lancer la partie</button>`
+          : `<div class="muted">En attente que le chef lance la partie…</div>`}
+        <div id="errorBox" class="error-box"></div>
+      </div>
+    `;
+    if (isHost){
+      document.getElementById('startBtn').onclick = () => {
+        socket.emit('session:start', { code: me.code }, (res) => {
+          if (res && res.error) showError(res.error);
+        });
+      };
+    }
+  }
+
+  function renderQuestion(){
+    const isHost = me.isHost;
+    app.innerHTML = `
+      <div class="card">
+        <div class="round-label">Question ${state.roundIndex + 1} / ${state.totalRounds}</div>
+        <div class="fr-phrase">${escapeHtml(state.fr)}</div>
+        <div class="timer" id="timerDisplay">30s</div>
+        ${isHost
+          ? `<div class="muted">Les joueurs répondent en ce moment…</div>`
+          : `
+            <textarea id="answerInput" placeholder="Ta réponse en anglais…"></textarea>
+            <button id="submitBtn" class="btn-primary">Envoyer</button>
+            <div id="submitStatus" class="muted"></div>
+          `}
+      </div>
+    `;
+    if (!isHost){
+      document.getElementById('submitBtn').onclick = () => {
+        const text = document.getElementById('answerInput').value;
+        socket.emit('answer:submit', { code: me.code, text }, (res) => {
+          const statusEl = document.getElementById('submitStatus');
+          if (!statusEl) return;
+          statusEl.textContent = (res && res.error) ? res.error : 'Réponse envoyée ✓';
+        });
+      };
+    }
+    const tick = () => {
+      const remainingMs = state.deadline - Date.now();
+      const remaining = Math.max(0, Math.ceil(remainingMs / 1000));
+      const timerEl = document.getElementById('timerDisplay');
+      if (timerEl) timerEl.textContent = remaining + 's';
+      if (remainingMs <= 0) clearInterval(countdownInterval);
+    };
+    tick();
+    countdownInterval = setInterval(tick, 250);
+  }
+
+  function renderReview(){
+    const isHost = me.isHost;
+    const gradeLabel = { oui:'Oui ✓', presque:'Presque ~', non:'Non ✗' };
+    app.innerHTML = `
+      <div class="card">
+        <div class="round-label">Review — question ${state.roundIndex + 1} / ${state.totalRounds}</div>
+        <div class="fr-phrase">${escapeHtml(state.fr)}</div>
+        <div class="ref-answers">
+          <span class="label">Réponses attendues</span>
+          <div>${state.referenceAnswers.map(escapeHtml).join(' / ')}</div>
+          ${state.native ? `<div class="muted" style="margin-top:6px;">À l'oral : ${escapeHtml(state.native)}</div>` : ''}
+        </div>
+        <div class="player-answer">
+          <span class="label">${escapeHtml(state.playerName)} a répondu</span>
+          <div class="answer-text">${state.answerText ? escapeHtml(state.answerText) : '(pas de réponse)'}</div>
+        </div>
+        ${state.grade ? `<div class="grade-result grade-${state.grade}">${gradeLabel[state.grade]}</div>` : ''}
+        ${isHost && !state.grade ? `
+          <div class="grade-buttons">
+            <button data-grade="oui" class="btn-grade ok">Oui</button>
+            <button data-grade="presque" class="btn-grade warn">Presque</button>
+            <button data-grade="non" class="btn-grade bad">Non</button>
+          </div>
+        ` : (!isHost && !state.grade ? `<div class="muted">Le chef est en train de noter…</div>` : '')}
+        <div id="errorBox" class="error-box"></div>
+      </div>
+    `;
+    if (isHost){
+      app.querySelectorAll('.btn-grade').forEach(btn => {
+        btn.onclick = () => {
+          socket.emit('review:grade', { code: me.code, grade: btn.dataset.grade }, (res) => {
+            if (res && res.error) showError(res.error);
+          });
+        };
+      });
+    }
+  }
+
+  function renderFinished(){
+    app.innerHTML = `
+      <div class="card">
+        <h2>Classement final</h2>
+        <ol class="leaderboard">
+          ${state.leaderboard.map((p, i) => `<li><span><span class="rank">#${i+1}</span>${escapeHtml(p.name)}</span><span class="score">${p.totalScore} pts</span></li>`).join('')}
+        </ol>
+        <button id="backHomeBtn" class="btn-primary">Nouvelle partie</button>
+      </div>
+    `;
+    document.getElementById('backHomeBtn').onclick = () => {
+      clearMe();
+      state = { screen:'home' };
+      render();
+    };
+  }
+
+  (function init(){
+    const saved = loadMe();
+    if (saved && saved.code && saved.name && !saved.isHost){
+      me = saved;
+      socket.emit('session:rejoin', { code: me.code, name: me.name }, (res) => {
+        if (res && res.error){
+          clearMe();
+          state = { screen:'home' };
+          render();
+        } else {
+          me.playerId = res.playerId;
+          saveMe();
+          applySnapshot(res.snapshot);
+        }
+      });
+    } else {
+      state = { screen:'home' };
+      render();
+    }
+  })();
+
+})();
+</script>
+</body>
+</html>

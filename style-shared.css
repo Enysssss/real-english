@@ -1,0 +1,33 @@
+:root{
+  --bg-deep:#122031;
+  --bg-deep-2:#0c1622;
+  --paper:#f1e9d2;
+  --paper-shadow:#d8cca5;
+  --ink:#20293a;
+  --ink-soft:#4b5568;
+  --red:#b8394a;
+  --blue:#2c5c86;
+  --brass:#b4863a;
+  --brass-light:#e0b968;
+  --ok:#4c7a5b;
+  --warn:#c17a2e;
+  --bad:#a44444;
+  --radius:10px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    radial-gradient(ellipse at 20% -10%, #1a2c42 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 110%, #0e1a2a 0%, transparent 55%),
+    var(--bg-deep);
+  color:var(--paper);
+  font-family:"IBM Plex Sans", sans-serif;
+  min-height:100vh;
+  padding:32px 16px 64px;
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+}
+
+.wrap{ max-width:880px; margin:0 auto; }
