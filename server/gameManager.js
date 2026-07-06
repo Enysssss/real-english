@@ -209,12 +209,22 @@ function findPlayerBySocket(session, socketId) {
   return [...session.players.values()].find((p) => p.socketId === socketId);
 }
 
+function allPlayersAnswered(session) {
+  return session.playerOrder.every((playerId) =>
+    session.answers.has(`${session.currentRoundIndex}:${playerId}`)
+  );
+}
+
 function submitAnswer(session, socketId, text) {
   const player = findPlayerBySocket(session, socketId);
   if (!player) return { error: 'Joueur inconnu.' };
   if (session.phase !== 'question') return { error: "Ce n'est pas le moment de répondre." };
   const key = `${session.currentRoundIndex}:${player.id}`;
   session.answers.set(key, { text: (text || '').slice(0, 300) });
+  if (allPlayersAnswered(session)) {
+    clearTimeout(session.roundTimer);
+    advanceAfterRound(session);
+  }
   return {};
 }
 
