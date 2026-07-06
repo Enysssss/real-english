@@ -52,6 +52,13 @@ function registerSocketHandlers(io) {
       ack && ack(result);
     });
 
+    socket.on('chat:send', ({ code, text } = {}, ack) => {
+      const session = gameManager.getSession(code);
+      if (!session) return ack && ack({ error: 'Code de partie introuvable.' });
+      const result = gameManager.sendChatMessage(session, socket.id, text);
+      ack && ack(result);
+    });
+
     socket.on('disconnect', () => {
       gameManager.disconnectSocket(socket.id);
     });

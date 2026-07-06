@@ -108,6 +108,37 @@
   }
   .leaderboard .rank{ font-family:"IBM Plex Mono", monospace; color:var(--brass-light); margin-right:10px; }
   .leaderboard .score{ font-weight:600; color:#f6efd9; }
+
+  .layout{ display:flex; gap:20px; align-items:flex-start; }
+  #app{ flex:1; min-width:0; }
+  .chat-panel{
+    display:none; flex-direction:column;
+    width:260px; flex-shrink:0; height:520px;
+    background:rgba(241,233,210,.05); border:1px solid rgba(241,233,210,.15);
+    border-radius:var(--radius); padding:16px 16px 12px;
+  }
+  .chat-panel h2{
+    font-family:"Special Elite", monospace; font-weight:400;
+    font-size:15px; margin:0 0 10px; color:#f6efd9;
+  }
+  .chat-messages{ flex:1; overflow-y:auto; margin-bottom:10px; }
+  .chat-msg{ font-size:13px; margin-bottom:8px; line-height:1.4; }
+  .chat-msg .chat-name{ font-weight:600; color:var(--brass-light); margin-right:5px; }
+  .chat-msg.me .chat-name{ color:var(--blue); }
+  .chat-msg .chat-text{ color:#e2e6ec; word-break:break-word; }
+  .chat-form{ display:flex; gap:6px; }
+  .chat-form input{
+    flex:1; background:rgba(241,233,210,.08); border:1px solid rgba(241,233,210,.22);
+    border-radius:6px; padding:8px 10px; color:var(--paper); font-size:13px;
+  }
+  .chat-form button{
+    background:var(--brass); color:#1c1305; border:none; border-radius:6px;
+    padding:8px 12px; font-weight:600; font-size:13px; cursor:pointer;
+  }
+  @media (max-width:720px){
+    .layout{ flex-direction:column; }
+    .chat-panel{ width:100%; height:260px; }
+  }
 </style>
 </head>
 <body>
@@ -119,7 +150,17 @@
     <a class="home-link" href="/">← retour au carnet</a>
   </header>
 
-  <div id="app"></div>
+  <div class="layout">
+    <div id="app"></div>
+    <aside id="chatPanel" class="chat-panel">
+      <h2>Chat</h2>
+      <div id="chatMessages" class="chat-messages"></div>
+      <form id="chatForm" class="chat-form">
+        <input id="chatInput" placeholder="Message…" maxlength="200" autocomplete="off">
+        <button type="submit">Envoyer</button>
+      </form>
+    </aside>
+  </div>
 
 </div>
 
@@ -133,10 +174,11 @@
   let me = { code: null, name: null, playerId: null, isHost: false };
   let state = { screen: 'home' };
   let countdownInterval = null;
+  let chatMessages = [];
 
   function saveMe(){ sessionStorage.setItem(STORAGE_KEY, JSON.stringify(me)); }
   function loadMe(){ try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY)); } catch(e){ return null; } }
-  function clearMe(){ sessionStorage.removeItem(STORAGE_KEY); me = { code:null, name:null, playerId:null, isHost:false }; }
+  function clearMe(){ sessionStorage.removeItem(STORAGE_KEY); me = { code:null, name:null, playerId:null, isHost:false }; chatMessages = []; }
 
   function escapeHtml(str){
     return String(str).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -190,8 +232,38 @@
     render();
   });
 
+  socket.on('chat:message', (msg) => {
+    chatMessages.push(msg);
+    renderChatMessages();
+  });
+
+  function renderChatMessages(){
+    const box = document.getElementById('chatMessages');
+    if (!box) return;
+    box.innerHTML = chatMessages.map(m => `
+      <div class="chat-msg${m.playerId === me.playerId ? ' me' : ''}">
+        <span class="chat-name">${escapeHtml(m.name)}</span>
+        <span class="chat-text">${escapeHtml(m.text)}</span>
+      </div>
+    `).join('');
+    box.scrollTop = box.scrollHeight;
+  }
+
+  document.getElementById('chatForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text || !me.code) return;
+    socket.emit('chat:send', { code: me.code, text }, (res) => {
+      if (res && res.error) showError(res.error);
+    });
+    input.value = '';
+  });
+
   function render(){
     clearInterval(countdownInterval);
+    document.getElementById('chatPanel').style.display = (state.screen === 'home') ? 'none' : 'flex';
+    renderChatMessages();
     if (state.screen === 'home') renderHome();
     else if (state.screen === 'lobby') renderLobby();
     else if (state.screen === 'question') renderQuestion();

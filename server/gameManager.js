@@ -205,12 +205,26 @@ function advanceAfterRound(session) {
   }
 }
 
+function findPlayerBySocket(session, socketId) {
+  return [...session.players.values()].find((p) => p.socketId === socketId);
+}
+
 function submitAnswer(session, socketId, text) {
-  const player = [...session.players.values()].find((p) => p.socketId === socketId);
+  const player = findPlayerBySocket(session, socketId);
   if (!player) return { error: 'Joueur inconnu.' };
   if (session.phase !== 'question') return { error: "Ce n'est pas le moment de répondre." };
   const key = `${session.currentRoundIndex}:${player.id}`;
   session.answers.set(key, { text: (text || '').slice(0, 300) });
+  return {};
+}
+
+function sendChatMessage(session, socketId, text) {
+  const player = findPlayerBySocket(session, socketId);
+  if (!player) return { error: 'Tu dois avoir rejoint la partie pour écrire.' };
+  const trimmed = (text || '').trim().slice(0, 200);
+  if (!trimmed) return { error: 'Message vide.' };
+  const message = { playerId: player.id, name: player.name, text: trimmed, ts: Date.now() };
+  io.to(session.code).emit('chat:message', message);
   return {};
 }
 
@@ -315,6 +329,7 @@ module.exports = {
   startSession,
   submitAnswer,
   gradeAnswer,
+  sendChatMessage,
   snapshotFor,
   broadcastSessionUpdate,
   disconnectSocket,
