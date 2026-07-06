@@ -322,14 +322,19 @@
           ${players.map(p => `<li>${escapeHtml(p.name)}${p.connected ? '' : ' (déconnecté)'}</li>`).join('') || '<li class="muted">En attente de joueurs…</li>'}
         </ul>
         ${isHost
-          ? `<button id="startBtn" class="btn-primary">Lancer la partie</button>`
+          ? `
+            <label class="muted" style="display:block;margin:14px 0 4px;">Durée par question (secondes)</label>
+            <input id="roundSecondsInput" type="number" min="5" max="120" value="30">
+            <button id="startBtn" class="btn-primary">Lancer la partie</button>
+          `
           : `<div class="muted">En attente que le chef lance la partie…</div>`}
         <div id="errorBox" class="error-box"></div>
       </div>
     `;
     if (isHost){
       document.getElementById('startBtn').onclick = () => {
-        socket.emit('session:start', { code: me.code }, (res) => {
+        const roundSeconds = Number(document.getElementById('roundSecondsInput').value) || 30;
+        socket.emit('session:start', { code: me.code, roundSeconds }, (res) => {
           if (res && res.error) showError(res.error);
         });
       };

@@ -6,7 +6,9 @@ const vocabBank = JSON.parse(
   fs.readFileSync(path.join(__dirname, '..', 'data', 'vocab.json'), 'utf8')
 ).items;
 
-const ROUND_SECONDS = 30;
+const DEFAULT_ROUND_SECONDS = 30;
+const MIN_ROUND_SECONDS = 5;
+const MAX_ROUND_SECONDS = 120;
 const ROUNDS_PER_GAME = 5;
 const POINTS = { oui: 2, presque: 1, non: 0 };
 const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O, 1/I/L
@@ -76,6 +78,7 @@ function createSession(hostSocketId, hostName) {
     players: new Map(),
     phase: 'lobby',
     rounds: [],
+    roundSeconds: DEFAULT_ROUND_SECONDS,
     currentRoundIndex: -1,
     roundTimer: null,
     roundDeadline: null,
@@ -171,10 +174,14 @@ function snapshotFor(session) {
   return { phase: session.phase };
 }
 
-function startSession(session, requesterSocketId) {
+function startSession(session, requesterSocketId, roundSeconds) {
   if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut lancer la partie.' };
   if (session.phase !== 'lobby') return { error: 'La partie a déjà commencé.' };
   if (session.players.size === 0) return { error: 'Attends au moins un joueur avant de lancer.' };
+  const parsed = Number(roundSeconds);
+  session.roundSeconds = Number.isFinite(parsed)
+    ? Math.min(MAX_ROUND_SECONDS, Math.max(MIN_ROUND_SECONDS, Math.round(parsed)))
+    : DEFAULT_ROUND_SECONDS;
   session.rounds = pickRounds();
   session.playerOrder = [...session.players.keys()];
   startRound(session, 0);
@@ -184,7 +191,7 @@ function startSession(session, requesterSocketId) {
 function startRound(session, index) {
   session.phase = 'question';
   session.currentRoundIndex = index;
-  session.roundDeadline = Date.now() + ROUND_SECONDS * 1000;
+  session.roundDeadline = Date.now() + session.roundSeconds * 1000;
   const round = session.rounds[index];
   io.to(session.code).emit('round:start', {
     roundIndex: index,
@@ -193,7 +200,7 @@ function startRound(session, index) {
     deadline: session.roundDeadline,
   });
   clearTimeout(session.roundTimer);
-  session.roundTimer = setTimeout(() => advanceAfterRound(session), ROUND_SECONDS * 1000);
+  session.roundTimer = setTimeout(() => advanceAfterRound(session), session.roundSeconds * 1000);
 }
 
 function advanceAfterRound(session) {
