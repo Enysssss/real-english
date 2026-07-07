@@ -134,6 +134,7 @@ function rejoinSession(session, socketId, name) {
 function eligibleVotersFor(session, answerPlayerId) {
   return session.playerOrder.filter((id) => {
     if (id === answerPlayerId) return false;
+    if (session.gradingMode === 'players' && id === session.hostPlayerId) return false;
     const p = session.players.get(id);
     return p && p.connected;
   });
@@ -197,9 +198,12 @@ function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, g
   if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut lancer la partie.' };
   if (session.phase !== 'lobby') return { error: 'La partie a déjà commencé.' };
   if (session.players.size === 0) return { error: 'Attends au moins un joueur avant de lancer.' };
-  const normalizedGradingMode = gradingMode === 'players' ? 'players' : 'host';
-  if (normalizedGradingMode === 'players' && session.players.size < 2) {
+  const normalizedGradingMode = ['players', 'everyone'].includes(gradingMode) ? gradingMode : 'host';
+  if (normalizedGradingMode === 'everyone' && session.players.size < 2) {
     return { error: 'Il faut au moins 2 joueurs pour que tout le monde note.' };
+  }
+  if (normalizedGradingMode === 'players' && session.players.size < 3) {
+    return { error: 'Il faut au moins 3 joueurs (le chef + 2 autres) pour que les autres joueurs notent sans le chef.' };
   }
   const parsed = Number(roundSeconds);
   session.roundSeconds = Number.isFinite(parsed)
@@ -292,10 +296,13 @@ function gradeAnswer(session, requesterSocketId, grade) {
   const key = `${roundIndex}:${answerPlayerId}`;
   if (session.grades.has(key)) return { error: 'Déjà noté.' };
 
-  if (session.gradingMode === 'players') {
+  if (session.gradingMode === 'players' || session.gradingMode === 'everyone') {
     const voter = findPlayerBySocket(session, requesterSocketId);
     if (!voter) return { error: 'Joueur inconnu.' };
     if (voter.id === answerPlayerId) return { error: 'Tu ne peux pas noter ta propre réponse.' };
+    if (session.gradingMode === 'players' && voter.id === session.hostPlayerId) {
+      return { error: 'Le chef ne note pas dans ce mode.' };
+    }
     const voteKey = `${key}:${voter.id}`;
     if (session.votes.has(voteKey)) return { error: 'Tu as déjà voté.' };
     session.votes.set(voteKey, grade);

@@ -387,9 +387,13 @@
               <input type="radio" name="gradingMode" value="host" checked style="width:auto;margin:0;">
               Le chef note
             </label>
-            <label class="muted" style="display:flex;align-items:center;gap:8px;margin:4px 0 14px;">
+            <label class="muted" style="display:flex;align-items:center;gap:8px;margin:4px 0;">
               <input type="radio" name="gradingMode" value="players" style="width:auto;margin:0;">
-              Tout le monde note (moyenne des votes)
+              Les autres joueurs notent (moyenne, sans le chef)
+            </label>
+            <label class="muted" style="display:flex;align-items:center;gap:8px;margin:4px 0 14px;">
+              <input type="radio" name="gradingMode" value="everyone" style="width:auto;margin:0;">
+              Tout le monde note, chef inclus (moyenne)
             </label>
             <button id="startBtn" class="btn-primary">Lancer la partie</button>
           `
@@ -449,22 +453,25 @@
         <button data-grade="non" class="btn-grade bad">Non (+0)</button>
       </div>
     `;
-    const isPlayersMode = state.gradingMode === 'players';
+    const isVotingMode = state.gradingMode === 'players' || state.gradingMode === 'everyone';
     const isAuthor = state.playerId === me.playerId;
+    const hostExcluded = state.gradingMode === 'players' && isHost;
     const votedPlayerIds = state.votedPlayerIds || [];
     const iHaveVoted = votedPlayerIds.includes(me.playerId);
     const finalized = state.points !== null && state.points !== undefined;
 
     let bodyExtra;
     if (finalized){
-      const markLabel = isPlayersMode ? `+${state.points} pt${state.points === 1 ? '' : 's'}` : gradeLabel[state.grade];
-      const markClass = isPlayersMode
+      const markLabel = isVotingMode ? `+${state.points} pt${state.points === 1 ? '' : 's'}` : gradeLabel[state.grade];
+      const markClass = isVotingMode
         ? (state.points >= 2 ? 'grade-oui' : state.points >= 1 ? 'grade-presque' : 'grade-non')
         : `grade-${state.grade}`;
       bodyExtra = `<div class="grade-mark ${markClass}">${markLabel}</div>`;
-    } else if (isPlayersMode){
+    } else if (isVotingMode){
       if (isAuthor){
         bodyExtra = `<div class="muted">Les autres joueurs notent ta réponse… (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
+      } else if (hostExcluded){
+        bodyExtra = `<div class="muted">Tu es le chef : dans ce mode, seuls les autres joueurs notent. (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
       } else if (iHaveVoted){
         bodyExtra = `<div class="muted">Vote enregistré. En attente des autres… (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
       } else {
