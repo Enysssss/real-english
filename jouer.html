@@ -6,7 +6,7 @@
 <title>Jouer entre amis — Carnet d'anglais</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style-shared.css">
 <style>
   header{ text-align:center; margin-bottom:28px; }
@@ -21,93 +21,123 @@
   }
   .home-link{ display:inline-block; margin-top:14px; font-size:12.5px; color:#b9c3d1; }
 
+  /* ---------- paper texture (real grain, not a gradient) ---------- */
+  .paper{
+    background:
+      linear-gradient(var(--paper), var(--paper)),
+      repeating-linear-gradient(180deg, transparent 0 39px, rgba(32,41,58,.05) 39px 40px);
+    position:relative;
+    color:var(--ink);
+  }
+  .paper::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.11  0 0 0 0 0.08  0 0 0 0 0.05  0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size:180px 180px;
+    mix-blend-mode:multiply;
+    pointer-events:none;
+  }
+
   .card{
-    background:rgba(241,233,210,.05);
-    border:1px solid rgba(241,233,210,.15);
-    border-radius:var(--radius);
-    padding:24px 26px;
-    margin-bottom:18px;
+    padding:26px 26px 24px;
+    margin-bottom:22px;
+    box-shadow:0 14px 26px rgba(0,0,0,.35);
+    clip-path:polygon(0.00% 0.00%, 7.14% 0.33%, 14.29% 1.84%, 21.43% 1.30%, 28.57% 1.54%, 35.71% 0.92%, 42.86% 1.66%, 50.00% 1.41%, 57.14% 2.31%, 64.29% 0.55%, 71.43% 0.19%, 78.57% 0.93%, 85.71% 1.91%, 92.86% 0.94%, 100.00% 0.00%, 97.90% 7.14%, 98.86% 14.29%, 99.74% 21.43%, 99.85% 28.57%, 99.00% 35.71%, 99.93% 42.86%, 99.53% 50.00%, 98.17% 57.14%, 99.35% 64.29%, 99.86% 71.43%, 98.45% 78.57%, 99.90% 85.71%, 98.58% 92.86%, 100.00% 100.00%, 92.86% 99.87%, 85.71% 98.95%, 78.57% 97.94%, 71.43% 98.96%, 64.29% 98.21%, 57.14% 97.79%, 50.00% 98.49%, 42.86% 99.84%, 35.71% 99.62%, 28.57% 99.65%, 21.43% 98.76%, 14.29% 100.00%, 7.14% 98.46%, 0.00% 100.00%, 0.29% 92.86%, 0.42% 85.71%, 0.10% 78.57%, 2.30% 71.43%, 1.04% 64.29%, 0.35% 57.14%, 1.85% 50.00%, 0.81% 42.86%, 1.81% 35.71%, 0.52% 28.57%, 1.14% 21.43%, 2.23% 14.29%, 0.35% 7.14%);
   }
   .card h2{
     font-family:"Special Elite", monospace; font-weight:400;
-    font-size:18px; margin:0 0 14px; color:#f6efd9;
+    font-size:18px; margin:0 0 14px; color:var(--ink);
   }
   .card input, .card textarea{
-    width:100%; background:rgba(241,233,210,.08);
-    border:1px solid rgba(241,233,210,.22); border-radius:6px;
-    padding:10px 12px; color:var(--paper); font-family:"IBM Plex Sans", sans-serif;
-    font-size:14px; margin-bottom:10px;
+    width:100%; background:transparent;
+    border:none; border-bottom:2px solid rgba(32,41,58,.3);
+    padding:8px 2px 10px; color:var(--ink); font-family:"IBM Plex Sans", sans-serif;
+    font-size:14px; margin-bottom:14px; position:relative; z-index:1;
   }
+  .card input:focus, .card textarea:focus{ outline:none; border-bottom-color:var(--blue); }
   .card textarea{ min-height:90px; resize:vertical; }
-  .card input::placeholder, .card textarea::placeholder{ color:#8b95a6; }
+  .card input::placeholder, .card textarea::placeholder{ color:#8b8060; font-style:italic; }
 
   .btn-primary{
-    background:var(--brass); color:#1c1305; border:none;
-    padding:11px 20px; border-radius:6px; font-weight:600; font-size:14.5px;
-    cursor:pointer; width:100%;
+    font-family:"Special Elite", monospace; font-size:15px; letter-spacing:.03em;
+    background:var(--red); color:#fff6ea; border:none;
+    padding:14px 20px; width:100%; cursor:pointer;
+    clip-path:polygon(0.00% 0.00%, 7.14% 0.44%, 14.29% 3.28%, 21.43% 0.74%, 28.57% 1.68%, 35.71% 1.24%, 42.86% 1.01%, 50.00% 1.66%, 57.14% 1.23%, 64.29% 0.93%, 71.43% 0.37%, 78.57% 0.68%, 85.71% 2.27%, 92.86% 2.10%, 100.00% 0.00%, 97.65% 7.14%, 99.09% 14.29%, 98.29% 21.43%, 99.60% 28.57%, 96.80% 35.71%, 98.82% 42.86%, 99.35% 50.00%, 97.38% 57.14%, 99.66% 64.29%, 98.38% 71.43%, 98.46% 78.57%, 97.56% 85.71%, 99.66% 92.86%, 100.00% 100.00%, 92.86% 96.99%, 85.71% 97.22%, 78.57% 97.81%, 71.43% 97.01%, 64.29% 99.46%, 57.14% 98.10%, 50.00% 99.02%, 42.86% 96.70%, 35.71% 99.61%, 28.57% 98.97%, 21.43% 98.75%, 14.29% 96.74%, 7.14% 97.25%, 0.00% 100.00%, 2.15% 92.86%, 2.68% 85.71%, 1.71% 78.57%, 0.83% 71.43%, 0.22% 64.29%, 2.30% 57.14%, 1.85% 50.00%, 3.20% 42.86%, 3.03% 35.71%, 0.51% 28.57%, 2.81% 21.43%, 0.12% 14.29%, 3.21% 7.14%);
+    box-shadow:0 6px 0 #7c2532, 0 10px 16px rgba(0,0,0,.3);
+    transition:transform .12s ease, box-shadow .12s ease, filter .15s ease;
   }
-  .btn-primary:hover{ background:var(--brass-light); }
+  .btn-primary:hover{ filter:brightness(1.08); }
+  .btn-primary:active{ transform:translateY(5px) scale(.98); box-shadow:0 1px 0 #7c2532, 0 3px 6px rgba(0,0,0,.25); }
 
   .error-box{ color:var(--bad); font-size:13px; min-height:18px; margin-top:8px; }
-  .muted{ color:#a9b3c2; font-size:13px; }
+  .muted{ color:var(--ink-soft); font-size:13px; }
 
-  .code-display{
-    font-family:"IBM Plex Mono", monospace; font-size:22px; letter-spacing:.1em;
-    color:var(--brass-light); margin-bottom:6px;
-  }
+  .postmark{ display:flex; justify-content:center; margin-bottom:8px; }
+  .postmark svg{ width:150px; color:var(--red); }
+  .postmark-code{ font-family:"IBM Plex Mono", monospace; font-size:24px; font-weight:700; fill:currentColor; letter-spacing:.05em; }
+  .postmark-sub{ font-family:"IBM Plex Mono", monospace; font-size:8px; letter-spacing:.14em; fill:currentColor; }
+
   .player-list{ list-style:none; padding:0; margin:12px 0 18px; }
   .player-list li{
-    padding:8px 10px; border-bottom:1px solid rgba(241,233,210,.1); font-size:14px;
+    padding:8px 10px; border-bottom:1px solid rgba(32,41,58,.15); font-size:14px;
   }
 
   .round-label{
     font-family:"IBM Plex Mono", monospace; font-size:12px; letter-spacing:.06em;
-    color:var(--brass-light); text-transform:uppercase; margin-bottom:10px;
+    color:var(--red); text-transform:uppercase; margin-bottom:10px;
   }
   .fr-phrase{
-    font-family:"Source Serif 4", serif; font-size:clamp(20px,3.2vw,26px);
-    line-height:1.4; color:#f6efd9; margin-bottom:16px;
+    font-family:"Source Serif 4", serif; font-style:italic; font-size:clamp(20px,3.2vw,26px);
+    line-height:1.4; color:var(--ink); margin-bottom:16px;
   }
+  .fr-phrase::before{ content:"“"; color:var(--red); font-style:normal; }
+  .fr-phrase::after{ content:"”"; color:var(--red); font-style:normal; }
   .timer{
     font-family:"IBM Plex Mono", monospace; font-size:28px; color:var(--red);
     margin-bottom:16px;
   }
 
   .ref-answers{
-    background:rgba(241,233,210,.06); border-radius:6px; padding:12px 14px; margin-bottom:14px;
+    background:rgba(32,41,58,.05); border-radius:2px; padding:12px 14px; margin-bottom:14px;
   }
   .ref-answers .label, .player-answer .label{
     font-family:"IBM Plex Mono", monospace; font-size:11px; text-transform:uppercase;
     letter-spacing:.06em; color:var(--blue); display:block; margin-bottom:4px;
   }
-  .player-answer{ margin-bottom:16px; }
-  .answer-text{ font-size:16px; color:#f6efd9; }
+  .player-answer{ margin-bottom:10px; }
+  .answer-text{ font-size:16px; color:var(--ink); }
 
   .grade-buttons{ display:flex; gap:10px; }
   .btn-grade{
-    flex:1; padding:12px 8px; border-radius:6px; border:none; font-weight:600;
-    font-size:14px; cursor:pointer; color:#fff;
+    font-family:"Special Elite", monospace;
+    flex:1; padding:12px 8px; border:none; font-weight:400;
+    font-size:14px; cursor:pointer; color:#fff6ea;
+    clip-path:polygon(0.00% 0.00%, 7.14% 2.42%, 14.29% 2.09%, 21.43% 0.90%, 28.57% 1.33%, 35.71% 0.93%, 42.86% 1.71%, 50.00% 0.83%, 57.14% 0.93%, 64.29% 0.45%, 71.43% 1.21%, 78.57% 1.51%, 85.71% 1.29%, 92.86% 1.73%, 100.00% 0.00%, 98.71% 7.14%, 99.41% 14.29%, 97.57% 21.43%, 99.96% 28.57%, 98.58% 35.71%, 98.50% 42.86%, 98.82% 50.00%, 98.98% 57.14%, 98.11% 64.29%, 98.85% 71.43%, 97.52% 78.57%, 99.31% 85.71%, 99.22% 92.86%, 100.00% 100.00%, 92.86% 98.05%, 85.71% 98.71%, 78.57% 99.87%, 71.43% 99.88%, 64.29% 98.62%, 57.14% 98.15%, 50.00% 98.10%, 42.86% 97.42%, 35.71% 98.36%, 28.57% 98.95%, 21.43% 99.37%, 14.29% 98.73%, 7.14% 97.56%, 0.00% 100.00%, 2.32% 92.86%, 0.37% 85.71%, 0.16% 78.57%, 0.44% 71.43%, 2.28% 64.29%, 2.14% 57.14%, 1.20% 50.00%, 2.42% 42.86%, 2.11% 35.71%, 2.50% 28.57%, 0.23% 21.43%, 1.35% 14.29%, 0.97% 7.14%);
+    box-shadow:0 4px 0 rgba(0,0,0,.3);
+    transition:transform .1s ease, box-shadow .1s ease, filter .15s ease;
   }
+  .btn-grade:hover{ filter:brightness(1.1); }
+  .btn-grade:active{ transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.3); }
   .btn-grade.ok{ background:var(--ok); }
   .btn-grade.warn{ background:var(--warn); }
   .btn-grade.bad{ background:var(--bad); }
-  .btn-grade:hover{ filter:brightness(1.1); }
 
-  .grade-result{
-    font-family:"Special Elite", monospace; font-size:22px; text-align:center;
-    padding:14px; border-radius:6px; margin-bottom:14px;
+  .grade-mark{
+    font-family:"Caveat", cursive; font-weight:700; font-size:42px;
+    text-align:center; margin:6px 0 18px; transform:rotate(-3deg);
+    text-decoration:underline wavy; text-decoration-color:currentColor; text-underline-offset:6px;
   }
-  .grade-result.grade-oui{ background:rgba(76,122,91,.25); color:#8fd6a5; }
-  .grade-result.grade-presque{ background:rgba(193,122,46,.25); color:#f0b876; }
-  .grade-result.grade-non{ background:rgba(164,68,68,.25); color:#f0a0a0; }
+  .grade-mark.grade-oui{ color:var(--ok); }
+  .grade-mark.grade-presque{ color:var(--warn); }
+  .grade-mark.grade-non{ color:var(--bad); }
 
   .leaderboard{ list-style:none; padding:0; margin:0 0 18px; counter-reset:none; }
   .leaderboard li{
     display:flex; justify-content:space-between; align-items:center;
-    padding:10px 12px; border-bottom:1px solid rgba(241,233,210,.1); font-size:15px;
+    padding:10px 12px; border-bottom:1px solid rgba(32,41,58,.15); font-size:15px;
   }
-  .leaderboard .rank{ font-family:"IBM Plex Mono", monospace; color:var(--brass-light); margin-right:10px; }
-  .leaderboard .score{ font-weight:600; color:#f6efd9; }
+  .leaderboard .rank{ font-family:"IBM Plex Mono", monospace; color:var(--red); margin-right:10px; }
+  .leaderboard .score{ font-weight:600; font-family:"Caveat",cursive; font-size:19px; color:var(--ink); }
 
   .layout{ display:flex; gap:20px; align-items:flex-start; }
   #app{ flex:1; min-width:0; }
@@ -182,6 +212,24 @@
 
   function escapeHtml(str){
     return String(str).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function postmarkSvg(code){
+    const ticks = [];
+    for (let i = 0; i < 36; i++){
+      const a = (i / 36) * Math.PI * 2;
+      const r1 = 78, r2 = i % 3 === 0 ? 68 : 73;
+      const x1 = 100 + r1 * Math.cos(a), y1 = 100 + r1 * Math.sin(a);
+      const x2 = 100 + r2 * Math.cos(a), y2 = 100 + r2 * Math.sin(a);
+      ticks.push(`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="currentColor" stroke-width="2"/>`);
+    }
+    return `<svg viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="86" fill="none" stroke="currentColor" stroke-width="3"/>
+      <circle cx="100" cy="100" r="62" fill="none" stroke="currentColor" stroke-width="2.5"/>
+      ${ticks.join('')}
+      <text x="100" y="94" text-anchor="middle" class="postmark-code">${escapeHtml(code)}</text>
+      <text x="100" y="118" text-anchor="middle" class="postmark-sub">REJOINS LA PARTIE</text>
+    </svg>`;
   }
 
   function showError(msg){
@@ -273,12 +321,12 @@
 
   function renderHome(){
     app.innerHTML = `
-      <div class="card">
+      <div class="card paper">
         <h2>Créer une partie</h2>
         <input id="hostNameInput" placeholder="Ton pseudo (chef de partie)">
         <button id="createBtn" class="btn-primary">Créer</button>
       </div>
-      <div class="card">
+      <div class="card paper">
         <h2>Rejoindre une partie</h2>
         <input id="joinCodeInput" placeholder="Code (ex: K7QP)" maxlength="4">
         <input id="joinNameInput" placeholder="Ton pseudo">
@@ -314,9 +362,9 @@
     const isHost = me.isHost;
     const players = state.players || [];
     app.innerHTML = `
-      <div class="card">
-        <div class="code-display">Code : <strong>${escapeHtml(me.code || '')}</strong></div>
-        <div class="muted">Chef : ${escapeHtml(state.hostName || '')}</div>
+      <div class="card paper">
+        <div class="postmark">${postmarkSvg(me.code || '')}</div>
+        <div class="muted" style="text-align:center;">Chef : ${escapeHtml(state.hostName || '')}</div>
         <h2 style="margin-top:18px;">Joueurs (${players.length})</h2>
         <ul class="player-list">
           ${players.map(p => `<li>${escapeHtml(p.name)}${p.connected ? '' : ' (déconnecté)'}</li>`).join('') || '<li class="muted">En attente de joueurs…</li>'}
@@ -343,7 +391,7 @@
 
   function renderQuestion(){
     app.innerHTML = `
-      <div class="card">
+      <div class="card paper">
         <div class="round-label">Question ${state.roundIndex + 1} / ${state.totalRounds}</div>
         <div class="fr-phrase">${escapeHtml(state.fr)}</div>
         <div class="timer" id="timerDisplay">30s</div>
@@ -373,9 +421,9 @@
 
   function renderReview(){
     const isHost = me.isHost;
-    const gradeLabel = { oui:'Oui ✓', presque:'Presque ~', non:'Non ✗' };
+    const gradeLabel = { oui:'Oui ! ✓', presque:'Presque…', non:'Non ✗' };
     app.innerHTML = `
-      <div class="card">
+      <div class="card paper">
         <div class="round-label">Review — question ${state.roundIndex + 1} / ${state.totalRounds}</div>
         <div class="fr-phrase">${escapeHtml(state.fr)}</div>
         <div class="ref-answers">
@@ -387,7 +435,7 @@
           <span class="label">${escapeHtml(state.playerName)} a répondu</span>
           <div class="answer-text">${state.answerText ? escapeHtml(state.answerText) : '(pas de réponse)'}</div>
         </div>
-        ${state.grade ? `<div class="grade-result grade-${state.grade}">${gradeLabel[state.grade]}</div>` : ''}
+        ${state.grade ? `<div class="grade-mark grade-${state.grade}">${gradeLabel[state.grade]}</div>` : ''}
         ${isHost && !state.grade ? `
           <div class="grade-buttons">
             <button data-grade="oui" class="btn-grade ok">Oui</button>
@@ -411,7 +459,7 @@
 
   function renderFinished(){
     app.innerHTML = `
-      <div class="card">
+      <div class="card paper">
         <h2>Classement final</h2>
         <ol class="leaderboard">
           ${state.leaderboard.map((p, i) => `<li><span><span class="rank">#${i+1}</span>${escapeHtml(p.name)}</span><span class="score">${p.totalScore} pts</span></li>`).join('')}
