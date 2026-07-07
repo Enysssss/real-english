@@ -6,12 +6,18 @@ const vocabBank = JSON.parse(
   fs.readFileSync(path.join(__dirname, '..', 'data', 'vocab.json'), 'utf8')
 ).items;
 
+const dareBank = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', 'data', 'dares.json'), 'utf8')
+).dares;
+
 const DEFAULT_ROUND_SECONDS = 30;
 const MIN_ROUND_SECONDS = 5;
 const MAX_ROUND_SECONDS = 120;
 const ROUNDS_PER_GAME = 5;
 const POINTS = { oui: 3, presque: 1, non: 0 };
 const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O, 1/I/L
+const DARE_CHANCE = 0.45;
+const DARE_DURATION_MS = 8000;
 
 const sessions = new Map();
 let io = null;
@@ -88,7 +94,12 @@ function createSession(hostSocketId, hostName) {
     playerOrder: [],
     reviewCursor: { roundIndex: 0, playerIdx: 0 },
     carnetEnabled: true,
-    gradingMode: 'host', // 'host' | 'players'
+    gradingMode: 'host', // 'host' | 'peers' | 'everyone'
+    dareEnabled: false,
+    dareTimer: null,
+    currentDare: null,
+    lastDareTargetId: null,
+    pendingAfterDare: null,
     createdAt: Date.now(),
   };
   // the host plays too — they just also happen to grade the answers afterwards
@@ -187,13 +198,16 @@ function snapshotFor(session) {
   if (session.phase === 'review') {
     return reviewShowPayload(session);
   }
+  if (session.phase === 'dare') {
+    return { phase: 'dare', ...session.currentDare };
+  }
   if (session.phase === 'finished') {
     return { phase: 'finished', leaderboard: leaderboard(session) };
   }
   return { phase: session.phase };
 }
 
-function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, gradingMode) {
+function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, gradingMode, dareEnabled) {
   if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut lancer la partie.' };
   if (session.phase !== 'lobby') return { error: 'La partie a déjà commencé.' };
   if (session.players.size === 0) return { error: 'Attends au moins un joueur avant de lancer.' };
@@ -207,6 +221,7 @@ function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, g
     : DEFAULT_ROUND_SECONDS;
   session.carnetEnabled = carnetEnabled === undefined ? true : !!carnetEnabled;
   session.gradingMode = normalizedGradingMode;
+  session.dareEnabled = !!dareEnabled;
   session.rounds = pickRounds();
   session.playerOrder = [...session.players.keys()];
   startRound(session, 0);
@@ -231,11 +246,55 @@ function startRound(session, index) {
 
 function advanceAfterRound(session) {
   const next = session.currentRoundIndex + 1;
-  if (next < session.rounds.length) {
-    startRound(session, next);
-  } else {
-    startReview(session);
+  const proceed = () => {
+    if (next < session.rounds.length) {
+      startRound(session, next);
+    } else {
+      startReview(session);
+    }
+  };
+  maybeTriggerDare(session, proceed);
+}
+
+function maybeTriggerDare(session, next) {
+  if (!session.dareEnabled || session.playerOrder.length === 0 || Math.random() > DARE_CHANCE) {
+    next();
+    return;
   }
+  const candidates = session.playerOrder.filter((id) => id !== session.lastDareTargetId);
+  const pool = candidates.length > 0 ? candidates : session.playerOrder;
+  const targetId = pool[Math.floor(Math.random() * pool.length)];
+  const target = session.players.get(targetId);
+  const targetName = target ? target.name : '???';
+  const rawText = dareBank[Math.floor(Math.random() * dareBank.length)];
+
+  session.lastDareTargetId = targetId;
+  session.phase = 'dare';
+  session.currentDare = {
+    targetPlayerId: targetId,
+    targetName,
+    text: rawText.replace('{name}', targetName),
+    deadline: Date.now() + DARE_DURATION_MS,
+  };
+  io.to(session.code).emit('dare:show', session.currentDare);
+
+  const advance = () => {
+    session.pendingAfterDare = null;
+    session.currentDare = null;
+    next();
+  };
+  session.pendingAfterDare = advance;
+  clearTimeout(session.dareTimer);
+  session.dareTimer = setTimeout(advance, DARE_DURATION_MS);
+}
+
+function skipDare(session, requesterSocketId) {
+  if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut passer ce gage.' };
+  if (session.phase !== 'dare') return { error: "Ce n'est pas la phase de gage." };
+  clearTimeout(session.dareTimer);
+  const advance = session.pendingAfterDare;
+  if (advance) advance();
+  return {};
 }
 
 function findPlayerBySocket(session, socketId) {
@@ -400,6 +459,7 @@ function disconnectSocket(socketId) {
       // Everyone's gone — kill the session for good rather than leaving it
       // around for someone to stumble back into later.
       clearTimeout(session.roundTimer);
+      clearTimeout(session.dareTimer);
       sessions.delete(session.code);
     } else {
       broadcastSessionUpdate(session);
@@ -416,6 +476,7 @@ module.exports = {
   startSession,
   submitAnswer,
   gradeAnswer,
+  skipDare,
   sendChatMessage,
   snapshotFor,
   broadcastSessionUpdate,

@@ -97,6 +97,15 @@
     margin-bottom:16px;
   }
 
+  .dare-target{
+    font-family:"Special Elite", monospace; font-size:14px; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--red); text-align:center; margin-bottom:10px;
+  }
+  .dare-text{
+    font-family:"Source Serif 4", serif; font-style:italic; font-size:clamp(19px,3vw,24px);
+    line-height:1.4; color:var(--ink); margin-bottom:16px; text-align:center;
+  }
+
   .ref-answers{
     background:rgba(32,41,58,.05); border-radius:2px; padding:12px 14px; margin-bottom:14px;
   }
@@ -245,6 +254,8 @@
       state = { screen:'question', ...snapshot };
     } else if (snapshot.phase === 'review'){
       state = { screen:'review', ...snapshot };
+    } else if (snapshot.phase === 'dare'){
+      state = { screen:'dare', ...snapshot };
     } else if (snapshot.phase === 'finished'){
       state = { screen:'finished', leaderboard: snapshot.leaderboard };
     }
@@ -265,6 +276,11 @@
 
   socket.on('review:show', (payload) => {
     state = { screen:'review', ...payload };
+    render();
+  });
+
+  socket.on('dare:show', (payload) => {
+    state = { screen:'dare', ...payload };
     render();
   });
 
@@ -321,6 +337,7 @@
     else if (state.screen === 'lobby') renderLobby();
     else if (state.screen === 'question') renderQuestion();
     else if (state.screen === 'review') renderReview();
+    else if (state.screen === 'dare') renderDare();
     else if (state.screen === 'finished') renderFinished();
   }
 
@@ -395,6 +412,10 @@
               <input type="radio" name="gradingMode" value="peers" style="width:auto;margin:0;">
               Tout le monde vote (moyenne), sauf celui dont c'est la réponse
             </label>
+            <label class="muted" style="display:flex;align-items:center;gap:8px;margin:4px 0 14px;">
+              <input id="dareEnabledInput" type="checkbox" style="width:auto;margin:0;">
+              Activer les mini-défis/gages surprise entre les questions
+            </label>
             <button id="startBtn" class="btn-primary">Lancer la partie</button>
           `
           : `<div class="muted">En attente que le chef lance la partie…</div>`}
@@ -406,7 +427,8 @@
         const roundSeconds = Number(document.getElementById('roundSecondsInput').value) || 30;
         const carnetEnabled = document.getElementById('carnetEnabledInput').checked;
         const gradingMode = document.querySelector('input[name="gradingMode"]:checked').value;
-        socket.emit('session:start', { code: me.code, roundSeconds, carnetEnabled, gradingMode }, (res) => {
+        const dareEnabled = document.getElementById('dareEnabledInput').checked;
+        socket.emit('session:start', { code: me.code, roundSeconds, carnetEnabled, gradingMode, dareEnabled }, (res) => {
           if (res && res.error) showError(res.error);
         });
       };
@@ -432,6 +454,38 @@
         statusEl.textContent = (res && res.error) ? res.error : 'Réponse envoyée ✓';
       });
     };
+    const tick = () => {
+      const remainingMs = state.deadline - Date.now();
+      const remaining = Math.max(0, Math.ceil(remainingMs / 1000));
+      const timerEl = document.getElementById('timerDisplay');
+      if (timerEl) timerEl.textContent = remaining + 's';
+      if (remainingMs <= 0) clearInterval(countdownInterval);
+    };
+    tick();
+    countdownInterval = setInterval(tick, 250);
+  }
+
+  function renderDare(){
+    const isTarget = state.targetPlayerId === me.playerId;
+    app.innerHTML = `
+      <div class="card paper">
+        <div class="round-label">Pause gage 🎲</div>
+        <div class="dare-target">${isTarget ? "C'est toi !" : escapeHtml(state.targetName)}</div>
+        <div class="dare-text">${escapeHtml(state.text)}</div>
+        <div class="timer" id="timerDisplay"></div>
+        ${me.isHost
+          ? `<button id="dareSkipBtn" class="btn-primary">Passer</button>`
+          : `<div class="muted">La question suivante arrive dans quelques secondes…</div>`}
+        <div id="errorBox" class="error-box"></div>
+      </div>
+    `;
+    if (me.isHost){
+      document.getElementById('dareSkipBtn').onclick = () => {
+        socket.emit('dare:skip', { code: me.code }, (res) => {
+          if (res && res.error) showError(res.error);
+        });
+      };
+    }
     const tick = () => {
       const remainingMs = state.deadline - Date.now();
       const remaining = Math.max(0, Math.ceil(remainingMs / 1000));

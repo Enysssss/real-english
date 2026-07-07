@@ -31,10 +31,10 @@ function registerSocketHandlers(io) {
       gameManager.broadcastSessionUpdate(session);
     });
 
-    socket.on('session:start', ({ code, roundSeconds, carnetEnabled, gradingMode } = {}, ack) => {
+    socket.on('session:start', ({ code, roundSeconds, carnetEnabled, gradingMode, dareEnabled } = {}, ack) => {
       const session = gameManager.getSession(code);
       if (!session) return ack && ack({ error: 'Code de partie introuvable.' });
-      const result = gameManager.startSession(session, socket.id, roundSeconds, carnetEnabled, gradingMode);
+      const result = gameManager.startSession(session, socket.id, roundSeconds, carnetEnabled, gradingMode, dareEnabled);
       ack && ack(result);
     });
 
@@ -49,6 +49,13 @@ function registerSocketHandlers(io) {
       const session = gameManager.getSession(code);
       if (!session) return ack && ack({ error: 'Code de partie introuvable.' });
       const result = gameManager.gradeAnswer(session, socket.id, grade);
+      ack && ack(result);
+    });
+
+    socket.on('dare:skip', ({ code } = {}, ack) => {
+      const session = gameManager.getSession(code);
+      if (!session) return ack && ack({ error: 'Code de partie introuvable.' });
+      const result = gameManager.skipDare(session, socket.id);
       ack && ack(result);
     });
 
