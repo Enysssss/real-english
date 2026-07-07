@@ -388,12 +388,12 @@
               Le chef note
             </label>
             <label class="muted" style="display:flex;align-items:center;gap:8px;margin:4px 0;">
-              <input type="radio" name="gradingMode" value="players" style="width:auto;margin:0;">
-              Les autres joueurs notent (moyenne, sans le chef)
+              <input type="radio" name="gradingMode" value="everyone" style="width:auto;margin:0;">
+              Tout le monde vote (moyenne), même celui dont c'est la réponse
             </label>
             <label class="muted" style="display:flex;align-items:center;gap:8px;margin:4px 0 14px;">
-              <input type="radio" name="gradingMode" value="everyone" style="width:auto;margin:0;">
-              Tout le monde note, chef inclus (moyenne)
+              <input type="radio" name="gradingMode" value="peers" style="width:auto;margin:0;">
+              Tout le monde vote (moyenne), sauf celui dont c'est la réponse
             </label>
             <button id="startBtn" class="btn-primary">Lancer la partie</button>
           `
@@ -453,9 +453,9 @@
         <button data-grade="non" class="btn-grade bad">Non (+0)</button>
       </div>
     `;
-    const isVotingMode = state.gradingMode === 'players' || state.gradingMode === 'everyone';
+    const isVotingMode = state.gradingMode === 'peers' || state.gradingMode === 'everyone';
     const isAuthor = state.playerId === me.playerId;
-    const hostExcluded = state.gradingMode === 'players' && isHost;
+    const authorExcluded = state.gradingMode === 'peers' && isAuthor;
     const votedPlayerIds = state.votedPlayerIds || [];
     const iHaveVoted = votedPlayerIds.includes(me.playerId);
     const finalized = state.points !== null && state.points !== undefined;
@@ -468,10 +468,8 @@
         : `grade-${state.grade}`;
       bodyExtra = `<div class="grade-mark ${markClass}">${markLabel}</div>`;
     } else if (isVotingMode){
-      if (isAuthor){
+      if (authorExcluded){
         bodyExtra = `<div class="muted">Les autres joueurs notent ta réponse… (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
-      } else if (hostExcluded){
-        bodyExtra = `<div class="muted">Tu es le chef : dans ce mode, seuls les autres joueurs notent. (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
       } else if (iHaveVoted){
         bodyExtra = `<div class="muted">Vote enregistré. En attente des autres… (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
       } else {
