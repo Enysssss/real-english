@@ -5,7 +5,9 @@
   let entries = [];
   let mode = 'anon'; // 'anon' | 'account'
   let username = null;
-  let open = false;
+  let carnetOpen = false;
+  let authOpen = false;
+  let signupMode = false;
 
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -38,6 +40,35 @@
   // ---------- CSS ----------
   const style = document.createElement('style');
   style.textContent = `
+    #authWidget{ position:fixed; top:16px; right:16px; z-index:9998; font-family:"IBM Plex Sans", sans-serif; }
+    #authToggle{
+      background:var(--brass); color:#1c1305; border:none; border-radius:999px;
+      padding:8px 16px; font-weight:600; font-size:13px; cursor:pointer;
+      box-shadow:0 4px 12px rgba(0,0,0,.35);
+    }
+    #authToggle:hover{ background:var(--brass-light); }
+    #authPopover{
+      display:none; position:absolute; top:calc(100% + 8px); right:0;
+      background:var(--paper); color:var(--ink); border-radius:8px; padding:14px;
+      width:220px; box-shadow:0 12px 30px rgba(0,0,0,.4); font-size:12.5px;
+    }
+    #authPopover.open{ display:block; }
+    #authPopover .row{ display:flex; flex-direction:column; gap:6px; margin-bottom:8px; }
+    #authPopover input{
+      font-size:12.5px; padding:6px 8px; border:1px solid var(--paper-shadow);
+      border-radius:4px; background:#fff; color:var(--ink);
+    }
+    #authPopover button.primary{
+      font-size:12.5px; font-weight:600; padding:7px 10px; border:none; border-radius:4px;
+      background:var(--blue); color:#fff; cursor:pointer; width:100%;
+    }
+    #authPopover .switch-link{ color:var(--blue); cursor:pointer; text-decoration:underline; font-size:11.5px; display:block; margin-top:6px; }
+    #authPopover .err{ color:var(--bad,#a44444); font-size:11.5px; margin-top:6px; min-height:14px; }
+    #authPopover .logout-btn{
+      font-size:12.5px; font-weight:600; padding:7px 10px; border:none; border-radius:4px;
+      background:var(--bad,#a44444); color:#fff; cursor:pointer; width:100%;
+    }
+
     #carnetToggle{
       position:fixed; right:22px; bottom:22px; z-index:9998;
       font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:14px;
@@ -62,20 +93,12 @@
     #carnetModal .carnet-header:active{ cursor:grabbing; }
     #carnetModal .carnet-close{ background:none; border:none; color:var(--paper); font-size:16px; cursor:pointer; padding:0 4px; }
     #carnetModal .carnet-body{ padding:14px 16px; overflow-y:auto; }
-    .carnet-auth{ font-size:12.5px; margin-bottom:12px; padding-bottom:10px; border-bottom:1px dashed var(--paper-shadow); }
-    .carnet-auth .row{ display:flex; gap:6px; margin-bottom:6px; }
-    .carnet-auth input{
-      flex:1; font-size:12.5px; padding:6px 8px; border:1px solid var(--paper-shadow);
-      border-radius:4px; background:#fff; color:var(--ink);
+    .carnet-owner{ font-size:11.5px; color:var(--ink-soft); margin-bottom:10px; }
+    .carnet-import{ font-size:12px; margin-bottom:12px; padding-bottom:10px; border-bottom:1px dashed var(--paper-shadow); }
+    .carnet-import button{
+      width:100%; font-size:12px; font-weight:600; padding:7px 10px; border:none; border-radius:4px;
+      background:var(--ok,#4c7a5b); color:#fff; cursor:pointer;
     }
-    .carnet-auth button{
-      font-size:12px; font-weight:600; padding:6px 10px; border:none; border-radius:4px;
-      background:var(--blue); color:#fff; cursor:pointer;
-    }
-    .carnet-auth .switch-link{ color:var(--blue); cursor:pointer; text-decoration:underline; font-size:11.5px; }
-    .carnet-auth .err{ color:var(--bad,#a44444); font-size:11.5px; margin-top:4px; min-height:14px; }
-    .carnet-auth .logged{ display:flex; align-items:center; justify-content:space-between; }
-    .carnet-auth .import-btn{ margin-top:8px; width:100%; background:var(--ok,#4c7a5b); }
     .carnet-form{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
     .carnet-form input, .carnet-form textarea{
       font-family:inherit; font-size:13px; padding:7px 9px; border:1px solid var(--paper-shadow);
@@ -102,7 +125,31 @@
   `;
   document.head.appendChild(style);
 
-  // ---------- markup ----------
+  // ---------- auth widget markup (global, top-right) ----------
+  const authWidget = document.createElement('div');
+  authWidget.id = 'authWidget';
+  authWidget.innerHTML = `
+    <button id="authToggle"></button>
+    <div id="authPopover"></div>
+  `;
+  document.body.appendChild(authWidget);
+  const authToggleBtn = authWidget.querySelector('#authToggle');
+  const authPopover = authWidget.querySelector('#authPopover');
+
+  authToggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    authOpen = !authOpen;
+    authPopover.classList.toggle('open', authOpen);
+  });
+  authPopover.addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', () => {
+    if (authOpen) {
+      authOpen = false;
+      authPopover.classList.remove('open');
+    }
+  });
+
+  // ---------- carnet modal markup (bottom-right) ----------
   const toggleBtn = document.createElement('button');
   toggleBtn.id = 'carnetToggle';
   toggleBtn.textContent = '📔 Carnet';
@@ -116,7 +163,10 @@
       <button class="carnet-close" aria-label="Fermer">✕</button>
     </div>
     <div class="carnet-body">
-      <div class="carnet-auth" id="carnetAuth"></div>
+      <div class="carnet-owner" id="carnetOwner"></div>
+      <div class="carnet-import" id="carnetImportBox" style="display:none;">
+        <button id="carnetImport"></button>
+      </div>
       <div class="carnet-form">
         <input id="carnetTerm" placeholder="Mot ou expression">
         <input id="carnetMeaning" placeholder="Sens en français">
@@ -171,11 +221,11 @@
     try { localStorage.setItem(POS_KEY, JSON.stringify({ left: rect.left, top: rect.top })); } catch (e) { /* ignore */ }
   });
 
-  // ---------- open/close ----------
-  toggleBtn.addEventListener('click', () => { open = !open; modal.classList.toggle('open', open); });
-  modal.querySelector('.carnet-close').addEventListener('click', () => { open = false; modal.classList.remove('open'); });
+  // ---------- open/close carnet ----------
+  toggleBtn.addEventListener('click', () => { carnetOpen = !carnetOpen; modal.classList.toggle('open', carnetOpen); });
+  modal.querySelector('.carnet-close').addEventListener('click', () => { carnetOpen = false; modal.classList.remove('open'); });
 
-  // ---------- rendering ----------
+  // ---------- rendering: carnet ----------
   function renderList() {
     const box = document.getElementById('carnetList');
     if (entries.length === 0) {
@@ -195,40 +245,50 @@
     });
   }
 
-  function renderAuth(errMsg) {
-    const box = document.getElementById('carnetAuth');
+  function renderCarnetOwner() {
+    const ownerEl = document.getElementById('carnetOwner');
+    ownerEl.textContent = mode === 'account'
+      ? `Carnet de ${username} (synchronisé)`
+      : 'Carnet local — connecte-toi pour le synchroniser entre appareils.';
+
+    const importBox = document.getElementById('carnetImportBox');
+    const localCount = loadLocalEntries().length;
+    if (mode === 'account' && localCount > 0) {
+      importBox.style.display = 'block';
+      document.getElementById('carnetImport').textContent = `Importer mes ${localCount} mot(s) locaux`;
+    } else {
+      importBox.style.display = 'none';
+    }
+  }
+
+  // ---------- rendering: global auth widget ----------
+  function renderAuthWidget(errMsg) {
     if (mode === 'account') {
-      const localCount = loadLocalEntries().length;
-      const showImport = localCount > 0;
-      box.innerHTML = `
-        <div class="logged">
-          <span>Connecté : <strong>${escapeHtml(username)}</strong></span>
-          <button id="carnetLogout">Se déconnecter</button>
-        </div>
-        ${showImport ? `<button class="import-btn" id="carnetImport">Importer mes ${localCount} mot(s) locaux</button>` : ''}
+      authToggleBtn.textContent = '👤 ' + username;
+      authPopover.innerHTML = `
+        <div style="margin-bottom:8px;">Connecté en tant que <strong>${escapeHtml(username)}</strong></div>
+        <button class="logout-btn" id="authLogout">Se déconnecter</button>
       `;
-      document.getElementById('carnetLogout').addEventListener('click', logout);
-      const importBtn = document.getElementById('carnetImport');
-      if (importBtn) importBtn.addEventListener('click', importLocalEntries);
+      document.getElementById('authLogout').addEventListener('click', logout);
       return;
     }
-    const signupMode = box.dataset.signup === '1';
-    box.innerHTML = `
+    authToggleBtn.textContent = 'Se connecter';
+    authPopover.innerHTML = `
       <div class="row">
-        <input id="carnetUser" placeholder="Pseudo">
-        <input id="carnetPass" type="password" placeholder="Mot de passe">
-        <button id="carnetSubmit">${signupMode ? 'Créer' : 'Connexion'}</button>
+        <input id="authUser" placeholder="Pseudo">
+        <input id="authPass" type="password" placeholder="Mot de passe">
       </div>
-      <span class="switch-link" id="carnetSwitch">${signupMode ? 'Déjà un compte ? Se connecter' : 'Pas de compte ? En créer un'}</span>
+      <button class="primary" id="authSubmit">${signupMode ? 'Créer mon compte' : 'Connexion'}</button>
+      <span class="switch-link" id="authSwitch">${signupMode ? 'Déjà un compte ? Se connecter' : 'Pas de compte ? En créer un'}</span>
       <div class="err">${errMsg ? escapeHtml(errMsg) : ''}</div>
     `;
-    document.getElementById('carnetSwitch').addEventListener('click', () => {
-      box.dataset.signup = signupMode ? '' : '1';
-      renderAuth();
+    document.getElementById('authSwitch').addEventListener('click', () => {
+      signupMode = !signupMode;
+      renderAuthWidget();
     });
-    document.getElementById('carnetSubmit').addEventListener('click', () => {
-      const u = document.getElementById('carnetUser').value.trim();
-      const p = document.getElementById('carnetPass').value;
+    document.getElementById('authSubmit').addEventListener('click', () => {
+      const u = document.getElementById('authUser').value.trim();
+      const p = document.getElementById('authPass').value;
       if (signupMode) signup(u, p); else login(u, p);
     });
   }
@@ -238,6 +298,7 @@
     const data = await api('/carnet');
     entries = data.entries;
     renderList();
+    renderCarnetOwner();
   }
 
   async function login(u, p) {
@@ -245,10 +306,12 @@
       const data = await api('/auth/login', { method: 'POST', body: { username: u, password: p } });
       username = data.username;
       mode = 'account';
+      authOpen = false;
+      authPopover.classList.remove('open');
       await refreshAccountEntries();
-      renderAuth();
+      renderAuthWidget();
     } catch (err) {
-      renderAuth(err.message);
+      renderAuthWidget(err.message);
     }
   }
 
@@ -257,10 +320,12 @@
       const data = await api('/auth/signup', { method: 'POST', body: { username: u, password: p } });
       username = data.username;
       mode = 'account';
+      authOpen = false;
+      authPopover.classList.remove('open');
       await refreshAccountEntries();
-      renderAuth();
+      renderAuthWidget();
     } catch (err) {
-      renderAuth(err.message);
+      renderAuthWidget(err.message);
     }
   }
 
@@ -268,9 +333,12 @@
     try { await api('/auth/logout', { method: 'POST' }); } catch (e) { /* ignore */ }
     mode = 'anon';
     username = null;
+    authOpen = false;
+    authPopover.classList.remove('open');
     entries = loadLocalEntries();
     renderList();
-    renderAuth();
+    renderCarnetOwner();
+    renderAuthWidget();
   }
 
   async function importLocalEntries() {
@@ -280,8 +348,8 @@
     }
     try { localStorage.removeItem(LOCAL_KEY); } catch (e) { /* ignore */ }
     await refreshAccountEntries();
-    renderAuth();
   }
+  document.getElementById('carnetImport').addEventListener('click', importLocalEntries);
 
   async function addEntry(term, meaning, example) {
     if (!term.trim() || !meaning.trim()) return;
@@ -319,7 +387,7 @@
   // ---------- public API for quick-add from index.html ----------
   window.CarnetWidget = {
     quickAdd(prefill) {
-      open = true;
+      carnetOpen = true;
       modal.classList.add('open');
       if (prefill) {
         document.getElementById('carnetTerm').value = prefill.term || '';
@@ -341,11 +409,13 @@
       } else {
         entries = loadLocalEntries();
         renderList();
+        renderCarnetOwner();
       }
     } catch (e) {
       entries = loadLocalEntries();
       renderList();
+      renderCarnetOwner();
     }
-    renderAuth();
+    renderAuthWidget();
   })();
 })();
