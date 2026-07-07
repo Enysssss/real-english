@@ -109,6 +109,43 @@
     font-family:"IBM Plex Sans", sans-serif; font-size:12.5px; color:var(--ink-soft);
     text-align:center; margin-bottom:14px;
   }
+  .vote-options{ display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+  .vote-option-btn{
+    font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:14px;
+    padding:11px 14px; border:none; border-radius:6px; cursor:pointer;
+    background:rgba(32,41,58,.06); color:var(--ink); text-align:left;
+    transition:background .12s ease;
+  }
+  .vote-option-btn:hover{ background:rgba(32,41,58,.12); }
+  .vote-custom-row{ display:flex; gap:8px; margin-bottom:8px; }
+  .vote-custom-row input{
+    flex:1; margin-bottom:0 !important; font-size:13px;
+    border-bottom:2px solid rgba(32,41,58,.3) !important;
+  }
+  .vote-custom-row button{
+    font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:13px;
+    padding:0 16px; border:none; border-radius:6px; cursor:pointer;
+    background:var(--ink); color:var(--paper);
+  }
+
+  .vote-chart{ display:flex; flex-direction:column; gap:10px; margin:14px 0 18px; }
+  .vote-chart-row{ display:flex; flex-direction:column; gap:4px; }
+  .vote-chart-label{
+    display:flex; justify-content:space-between; font-size:13px;
+    font-family:"IBM Plex Sans", sans-serif; font-weight:600; color:var(--ink);
+  }
+  .vote-chart-track{
+    height:16px; border-radius:8px; background:rgba(32,41,58,.08); overflow:hidden;
+  }
+  .vote-chart-fill{
+    height:100%; min-width:4px; border-radius:8px; background:var(--brass);
+    transition:width .4s ease;
+  }
+  .vote-custom-answers{ margin-top:6px; }
+  .vote-custom-answer{
+    font-size:13px; color:var(--ink-soft); margin-bottom:6px; line-height:1.4;
+  }
+  .vote-custom-answer .voter-name{ font-weight:600; color:var(--ink); }
 
   .ref-answers{
     background:rgba(32,41,58,.05); border-radius:2px; padding:12px 14px; margin-bottom:14px;
@@ -260,6 +297,8 @@
       state = { screen:'review', ...snapshot };
     } else if (snapshot.phase === 'icebreaker'){
       state = { screen:'icebreaker', ...snapshot };
+    } else if (snapshot.phase === 'icebreaker-results'){
+      state = { screen:'icebreaker-results', ...snapshot };
     } else if (snapshot.phase === 'finished'){
       state = { screen:'finished', leaderboard: snapshot.leaderboard };
     }
@@ -285,6 +324,11 @@
 
   socket.on('icebreaker:show', (payload) => {
     state = { screen:'icebreaker', ...payload };
+    render();
+  });
+
+  socket.on('icebreaker:results', (payload) => {
+    state = { screen:'icebreaker-results', ...payload };
     render();
   });
 
@@ -342,6 +386,7 @@
     else if (state.screen === 'question') renderQuestion();
     else if (state.screen === 'review') renderReview();
     else if (state.screen === 'icebreaker') renderIcebreaker();
+    else if (state.screen === 'icebreaker-results') renderIcebreakerResults();
     else if (state.screen === 'finished') renderFinished();
   }
 
@@ -470,6 +515,7 @@
   }
 
   function renderIcebreaker(){
+    if (state.type === 'vote'){ renderIcebreakerVote(); return; }
     const hasTarget = !!state.targetPlayerId;
     const isTarget = hasTarget && state.targetPlayerId === me.playerId;
     app.innerHTML = `
@@ -501,6 +547,101 @@
     };
     tick();
     countdownInterval = setInterval(tick, 250);
+  }
+
+  function renderIcebreakerVote(){
+    const votedPlayerIds = state.votedPlayerIds || [];
+    const iHaveVoted = votedPlayerIds.includes(me.playerId);
+    const options = state.options || [];
+    app.innerHTML = `
+      <div class="card paper">
+        <div class="round-label">Pause fun 🎉 — vote</div>
+        <div class="icebreaker-text">${escapeHtml(state.text)}</div>
+        ${iHaveVoted
+          ? `<div class="muted" style="text-align:center;margin-bottom:12px;">Vote enregistré ! En attente des autres… (${votedPlayerIds.length} / ${options.length})</div>`
+          : `
+            <div class="vote-options">
+              ${options.map(o => `<button class="vote-option-btn" data-player-id="${escapeHtml(o.id)}">${escapeHtml(o.name)}</button>`).join('')}
+            </div>
+            <div class="vote-custom-row">
+              <input id="voteCustomInput" placeholder="… ou écris ta propre réponse (en anglais)" maxlength="120">
+              <button id="voteCustomBtn">OK</button>
+            </div>
+          `}
+        <div class="icebreaker-hint">Réponds en anglais 🇬🇧 !</div>
+        <div class="timer" id="timerDisplay"></div>
+        ${me.isHost ? `<button id="icebreakerSkipBtn" class="btn-primary">Passer</button>` : ''}
+        <div id="errorBox" class="error-box"></div>
+      </div>
+    `;
+    if (!iHaveVoted){
+      app.querySelectorAll('.vote-option-btn').forEach(btn => {
+        btn.onclick = () => {
+          socket.emit('icebreaker:vote', { code: me.code, targetPlayerId: btn.dataset.playerId }, (res) => {
+            if (res && res.error) showError(res.error);
+          });
+        };
+      });
+      document.getElementById('voteCustomBtn').onclick = () => {
+        const customText = document.getElementById('voteCustomInput').value;
+        if (!customText.trim()) return showError('Écris quelque chose, ou choisis un joueur.');
+        socket.emit('icebreaker:vote', { code: me.code, customText }, (res) => {
+          if (res && res.error) showError(res.error);
+        });
+      };
+    }
+    if (me.isHost){
+      document.getElementById('icebreakerSkipBtn').onclick = () => {
+        socket.emit('icebreaker:skip', { code: me.code }, (res) => {
+          if (res && res.error) showError(res.error);
+        });
+      };
+    }
+    const tick = () => {
+      const remainingMs = state.deadline - Date.now();
+      const remaining = Math.max(0, Math.ceil(remainingMs / 1000));
+      const timerEl = document.getElementById('timerDisplay');
+      if (timerEl) timerEl.textContent = remaining + 's';
+      if (remainingMs <= 0) clearInterval(countdownInterval);
+    };
+    tick();
+    countdownInterval = setInterval(tick, 250);
+  }
+
+  function renderIcebreakerResults(){
+    const tally = state.tally || [];
+    const maxCount = Math.max(1, ...tally.map(t => t.count));
+    const customAnswers = state.customAnswers || [];
+    app.innerHTML = `
+      <div class="card paper">
+        <div class="round-label">Résultats 📊</div>
+        <div class="icebreaker-text">${escapeHtml(state.text)}</div>
+        <div class="vote-chart">
+          ${tally.map(t => `
+            <div class="vote-chart-row">
+              <div class="vote-chart-label"><span>${escapeHtml(t.name)}</span><span>${t.count}</span></div>
+              <div class="vote-chart-track"><div class="vote-chart-fill" style="width:${Math.round((t.count / maxCount) * 100)}%"></div></div>
+            </div>
+          `).join('')}
+        </div>
+        ${customAnswers.length ? `
+          <div class="vote-custom-answers">
+            ${customAnswers.map(a => `<div class="vote-custom-answer"><span class="voter-name">${escapeHtml(a.voterName)}</span> : "${escapeHtml(a.text)}"</div>`).join('')}
+          </div>
+        ` : ''}
+        ${me.isHost
+          ? `<button id="icebreakerSkipBtn" class="btn-primary">Continuer</button>`
+          : `<div class="muted">La question suivante arrive dans quelques secondes…</div>`}
+        <div id="errorBox" class="error-box"></div>
+      </div>
+    `;
+    if (me.isHost){
+      document.getElementById('icebreakerSkipBtn').onclick = () => {
+        socket.emit('icebreaker:skip', { code: me.code }, (res) => {
+          if (res && res.error) showError(res.error);
+        });
+      };
+    }
   }
 
   function renderReview(){

@@ -18,6 +18,7 @@ const POINTS = { oui: 3, presque: 1, non: 0 };
 const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O, 1/I/L
 const ICEBREAKER_CHANCE = 0.45;
 const ICEBREAKER_DURATION_MS = 20000;
+const ICEBREAKER_RESULTS_DURATION_MS = 6000;
 
 const sessions = new Map();
 let io = null;
@@ -98,6 +99,8 @@ function createSession(hostSocketId, hostName) {
     icebreakersEnabled: false,
     icebreakerTimer: null,
     currentIcebreaker: null,
+    currentIcebreakerResults: null,
+    icebreakerVotes: new Map(), // voterPlayerId -> { targetPlayerId, voterName } | { customText, voterName }
     lastIcebreakerTargetId: null,
     pendingAfterIcebreaker: null,
     createdAt: Date.now(),
@@ -201,6 +204,9 @@ function snapshotFor(session) {
   if (session.phase === 'icebreaker') {
     return { phase: 'icebreaker', ...session.currentIcebreaker };
   }
+  if (session.phase === 'icebreaker-results') {
+    return { phase: 'icebreaker-results', ...session.currentIcebreakerResults };
+  }
   if (session.phase === 'finished') {
     return { phase: 'finished', leaderboard: leaderboard(session) };
   }
@@ -261,42 +267,137 @@ function maybeTriggerIcebreaker(session, next) {
     next();
     return;
   }
-  const rawText = icebreakerBank[Math.floor(Math.random() * icebreakerBank.length)];
-  const needsTarget = rawText.includes('{name}');
-
-  let targetId = null;
-  let targetName = null;
-  if (needsTarget) {
-    const candidates = session.playerOrder.filter((id) => id !== session.lastIcebreakerTargetId);
-    const pool = candidates.length > 0 ? candidates : session.playerOrder;
-    targetId = pool[Math.floor(Math.random() * pool.length)];
-    const target = session.players.get(targetId);
-    targetName = target ? target.name : '???';
-    session.lastIcebreakerTargetId = targetId;
+  const entry = icebreakerBank[Math.floor(Math.random() * icebreakerBank.length)];
+  if (entry.type === 'vote') {
+    startIcebreakerVote(session, entry, next);
+  } else {
+    startIcebreakerOpinion(session, entry, next);
   }
+}
 
-  session.phase = 'icebreaker';
-  session.currentIcebreaker = {
-    targetPlayerId: targetId,
-    targetName,
-    text: needsTarget ? rawText.replace('{name}', targetName) : rawText,
-    deadline: Date.now() + ICEBREAKER_DURATION_MS,
-  };
-  io.to(session.code).emit('icebreaker:show', session.currentIcebreaker);
-
+function armIcebreakerAdvance(session, advanceFn, durationMs) {
   const advance = () => {
     session.pendingAfterIcebreaker = null;
-    session.currentIcebreaker = null;
-    next();
+    clearTimeout(session.icebreakerTimer);
+    advanceFn();
   };
   session.pendingAfterIcebreaker = advance;
   clearTimeout(session.icebreakerTimer);
-  session.icebreakerTimer = setTimeout(advance, ICEBREAKER_DURATION_MS);
+  session.icebreakerTimer = setTimeout(advance, durationMs);
+}
+
+function startIcebreakerOpinion(session, entry, next) {
+  const candidates = session.playerOrder.filter((id) => id !== session.lastIcebreakerTargetId);
+  const pool = candidates.length > 0 ? candidates : session.playerOrder;
+  const targetId = pool[Math.floor(Math.random() * pool.length)];
+  const target = session.players.get(targetId);
+  const targetName = target ? target.name : '???';
+  session.lastIcebreakerTargetId = targetId;
+
+  session.phase = 'icebreaker';
+  session.currentIcebreaker = {
+    type: 'opinion',
+    targetPlayerId: targetId,
+    targetName,
+    text: entry.text.replace('{name}', targetName),
+    deadline: Date.now() + ICEBREAKER_DURATION_MS,
+  };
+  io.to(session.code).emit('icebreaker:show', session.currentIcebreaker);
+  armIcebreakerAdvance(session, () => {
+    session.currentIcebreaker = null;
+    next();
+  }, ICEBREAKER_DURATION_MS);
+}
+
+function startIcebreakerVote(session, entry, next) {
+  session.icebreakerVotes = new Map();
+  const options = session.playerOrder
+    .map((id) => session.players.get(id))
+    .filter(Boolean)
+    .map((p) => ({ id: p.id, name: p.name }));
+
+  session.phase = 'icebreaker';
+  session.currentIcebreaker = {
+    type: 'vote',
+    text: entry.text,
+    options,
+    votedPlayerIds: [],
+    deadline: Date.now() + ICEBREAKER_DURATION_MS,
+  };
+  io.to(session.code).emit('icebreaker:show', session.currentIcebreaker);
+  armIcebreakerAdvance(session, () => finishIcebreakerVote(session, next), ICEBREAKER_DURATION_MS);
+}
+
+function submitIcebreakerVote(session, socketId, { targetPlayerId, customText } = {}) {
+  if (session.phase !== 'icebreaker' || !session.currentIcebreaker || session.currentIcebreaker.type !== 'vote') {
+    return { error: "Ce n'est pas le moment de voter." };
+  }
+  const voter = findPlayerBySocket(session, socketId);
+  if (!voter) return { error: 'Joueur inconnu.' };
+  if (session.icebreakerVotes.has(voter.id)) return { error: 'Tu as déjà voté.' };
+
+  const trimmedCustom = (customText || '').trim().slice(0, 120);
+  if (targetPlayerId) {
+    if (!session.players.has(targetPlayerId)) return { error: 'Choix invalide.' };
+    session.icebreakerVotes.set(voter.id, { targetPlayerId, voterName: voter.name });
+  } else if (trimmedCustom) {
+    session.icebreakerVotes.set(voter.id, { customText: trimmedCustom, voterName: voter.name });
+  } else {
+    return { error: 'Choisis quelqu\'un ou écris une réponse.' };
+  }
+
+  session.currentIcebreaker.votedPlayerIds = [...session.icebreakerVotes.keys()];
+
+  const requiredVoters = session.playerOrder.filter((id) => {
+    const p = session.players.get(id);
+    return p && p.connected;
+  });
+  const allVoted = requiredVoters.every((id) => session.icebreakerVotes.has(id));
+  if (allVoted) {
+    const advance = session.pendingAfterIcebreaker;
+    if (advance) advance();
+  } else {
+    io.to(session.code).emit('icebreaker:show', session.currentIcebreaker);
+  }
+  return {};
+}
+
+function finishIcebreakerVote(session, next) {
+  const tallyMap = new Map();
+  const customAnswers = [];
+  for (const vote of session.icebreakerVotes.values()) {
+    if (vote.targetPlayerId) {
+      tallyMap.set(vote.targetPlayerId, (tallyMap.get(vote.targetPlayerId) || 0) + 1);
+    } else if (vote.customText) {
+      customAnswers.push({ voterName: vote.voterName, text: vote.customText });
+    }
+  }
+  const tally = session.playerOrder
+    .map((id) => session.players.get(id))
+    .filter(Boolean)
+    .map((p) => ({ playerId: p.id, name: p.name, count: tallyMap.get(p.id) || 0 }))
+    .sort((a, b) => b.count - a.count);
+
+  session.phase = 'icebreaker-results';
+  session.currentIcebreakerResults = {
+    text: session.currentIcebreaker.text,
+    tally,
+    customAnswers,
+  };
+  session.currentIcebreaker = null;
+  io.to(session.code).emit('icebreaker:results', session.currentIcebreakerResults);
+
+  armIcebreakerAdvance(session, () => {
+    session.currentIcebreakerResults = null;
+    next();
+  }, ICEBREAKER_RESULTS_DURATION_MS);
 }
 
 function skipIcebreaker(session, requesterSocketId) {
   if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut passer cette pause.' };
-  if (session.phase !== 'icebreaker') return { error: "Ce n'est pas la phase de pause fun." };
+  if (session.phase !== 'icebreaker' && session.phase !== 'icebreaker-results') {
+    return { error: "Ce n'est pas la phase de pause fun." };
+  }
   clearTimeout(session.icebreakerTimer);
   const advance = session.pendingAfterIcebreaker;
   if (advance) advance();
@@ -483,6 +584,7 @@ module.exports = {
   submitAnswer,
   gradeAnswer,
   skipIcebreaker,
+  submitIcebreakerVote,
   sendChatMessage,
   snapshotFor,
   broadcastSessionUpdate,

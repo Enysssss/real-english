@@ -59,6 +59,13 @@ function registerSocketHandlers(io) {
       ack && ack(result);
     });
 
+    socket.on('icebreaker:vote', ({ code, targetPlayerId, customText } = {}, ack) => {
+      const session = gameManager.getSession(code);
+      if (!session) return ack && ack({ error: 'Code de partie introuvable.' });
+      const result = gameManager.submitIcebreakerVote(session, socket.id, { targetPlayerId, customText });
+      ack && ack(result);
+    });
+
     socket.on('chat:send', ({ code, text } = {}, ack) => {
       const session = gameManager.getSession(code);
       if (!session) return ack && ack({ error: 'Code de partie introuvable.' });
