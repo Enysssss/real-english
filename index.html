@@ -221,10 +221,9 @@
 
   /* ---------- lower grid: notebook + progress ---------- */
   .lower{
-    display:grid; grid-template-columns:1.3fr 1fr; gap:20px;
-    margin-top:34px;
+    display:grid; grid-template-columns:1fr; gap:20px;
+    max-width:480px; margin:34px auto 0;
   }
-  @media (max-width:720px){ .lower{ grid-template-columns:1fr; } }
 
   .panel{
     background:rgba(241,233,210,.05);
@@ -237,40 +236,6 @@
     font-size:17px; margin:0 0 4px; color:#f6efd9;
   }
   .panel .desc{ font-size:12.5px; color:#a9b3c2; margin-bottom:14px; }
-
-  .vocab-form{ display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
-  .vocab-form input, .vocab-form textarea{
-    background:rgba(241,233,210,.08);
-    border:1px solid rgba(241,233,210,.22);
-    border-radius:6px;
-    padding:8px 10px;
-    color:var(--paper);
-    font-family:"IBM Plex Sans", sans-serif;
-    font-size:13.5px;
-  }
-  .vocab-form textarea{ min-height:50px; resize:vertical; }
-  .vocab-form input::placeholder, .vocab-form textarea::placeholder{ color:#8b95a6; }
-  .btn-add{
-    align-self:flex-start;
-    background:var(--brass); color:#20150a;
-    padding:8px 16px; border-radius:6px; font-size:13px; font-weight:600;
-  }
-
-  .vocab-list{ display:flex; flex-direction:column; gap:10px; max-height:340px; overflow-y:auto; padding-right:4px; }
-  .vocab-card{
-    background:rgba(241,233,210,.06);
-    border-left:3px solid var(--brass);
-    border-radius:4px;
-    padding:9px 11px;
-    font-size:13px;
-  }
-  .vocab-card .term{ font-weight:600; color:#f6efd9; }
-  .vocab-card .meaning{ color:#c7cedb; margin-top:2px; }
-  .vocab-card .example{ color:#8b95a6; font-style:italic; margin-top:3px; font-size:12px; }
-  .vocab-card .del{
-    float:right; background:none; color:#8b95a6; font-size:11px; text-decoration:underline;
-  }
-  .empty-note{ font-size:12.5px; color:#8b95a6; font-style:italic; }
 
   .stat-row{ margin-bottom:12px; }
   .stat-row .stat-label{
@@ -355,18 +320,6 @@
 
   <div class="lower">
     <div class="panel">
-      <h2>Ton carnet de vocabulaire</h2>
-      <div class="desc">Ce que tu notes ici reste sauvegardé, même si tu reviens demain.</div>
-      <div class="vocab-form">
-        <input type="text" id="vTerm" placeholder="Mot ou expression (ex: cut someone some slack)">
-        <input type="text" id="vMeaning" placeholder="Sens en français">
-        <textarea id="vExample" placeholder="Exemple ou contexte (optionnel)"></textarea>
-        <button class="btn-add" id="vSave">Ajouter au carnet</button>
-      </div>
-      <div class="vocab-list" id="vocabList"></div>
-    </div>
-
-    <div class="panel">
       <h2>Ta progression</h2>
       <div class="desc">Un tampon par phrase bien maîtrisée.</div>
       <div class="big-stat">
@@ -396,7 +349,6 @@
 
   // ---------------- state ----------------
   let mastery = {};      // {id: {level, seen}}
-  let vocab = [];         // [{id, term, meaning, example, createdAt}]
   let activeCats = new Set();
   let currentCard = null;
   let revealed = false;
@@ -404,23 +356,15 @@
   const $ = (sel)=>document.querySelector(sel);
 
   // ---------------- storage ----------------
-  async function loadState(){
+  function loadState(){
     try{
-      const m = await window.storage.get('mastery');
-      if(m && m.value) mastery = JSON.parse(m.value);
+      const raw = localStorage.getItem('carnet-mastery');
+      mastery = raw ? JSON.parse(raw) : {};
     }catch(e){ mastery = {}; }
-    try{
-      const v = await window.storage.get('vocab');
-      if(v && v.value) vocab = JSON.parse(v.value);
-    }catch(e){ vocab = []; }
   }
-  async function saveMastery(){
-    try{ await window.storage.set('mastery', JSON.stringify(mastery)); }
+  function saveMastery(){
+    try{ localStorage.setItem('carnet-mastery', JSON.stringify(mastery)); }
     catch(e){ console.error('save mastery failed', e); }
-  }
-  async function saveVocab(){
-    try{ await window.storage.set('vocab', JSON.stringify(vocab)); }
-    catch(e){ console.error('save vocab failed', e); }
   }
 
   // ---------------- category chips ----------------
@@ -521,45 +465,6 @@
     setTimeout(nextCard, 250);
   }
 
-  // ---------------- vocab notebook ----------------
-  function renderVocab(){
-    const list = $('#vocabList');
-    list.innerHTML = '';
-    if(vocab.length===0){
-      const p = document.createElement('div');
-      p.className = 'empty-note';
-      p.textContent = "Rien pour l'instant — ajoute un mot ou une expression que tu veux retenir.";
-      list.appendChild(p);
-      return;
-    }
-    vocab.slice().reverse().forEach(v=>{
-      const card = document.createElement('div');
-      card.className = 'vocab-card';
-      card.innerHTML = '<button class="del">supprimer</button><div class="term"></div><div class="meaning"></div>' +
-        (v.example ? '<div class="example"></div>' : '');
-      card.querySelector('.term').textContent = v.term;
-      card.querySelector('.meaning').textContent = v.meaning;
-      if(v.example) card.querySelector('.example').textContent = v.example;
-      card.querySelector('.del').onclick = ()=>{
-        vocab = vocab.filter(x=>x.id!==v.id);
-        saveVocab();
-        renderVocab();
-      };
-      list.appendChild(card);
-    });
-  }
-
-  function addVocabEntry(term, meaning, example){
-    if(!term.trim() || !meaning.trim()) return;
-    vocab.push({
-      id: 'v-' + Date.now() + '-' + Math.random().toString(36).slice(2,7),
-      term: term.trim(), meaning: meaning.trim(), example: (example||'').trim(),
-      createdAt: Date.now()
-    });
-    saveVocab();
-    renderVocab();
-  }
-
   // ---------------- stats ----------------
   function renderStats(){
     const mastered = Object.values(mastery).filter(m=>m.level===3).length;
@@ -589,30 +494,26 @@
   document.querySelectorAll('.self-assess button').forEach(btn=>{
     btn.onclick = ()=>assess(parseInt(btn.dataset.lvl,10));
   });
-  $('#vSave').onclick = ()=>{
-    addVocabEntry($('#vTerm').value, $('#vMeaning').value, $('#vExample').value);
-    $('#vTerm').value=''; $('#vMeaning').value=''; $('#vExample').value='';
-  };
   $('#addVocabQuick').onclick = ()=>{
-    $('#vTerm').value = currentCard.native.split(',')[0].slice(0,40);
-    $('#vMeaning').value = currentCard.vocab.split('=')[0].trim();
-    $('#vExample').value = currentCard.native;
-    $('#vTerm').scrollIntoView({behavior:'smooth', block:'center'});
-    $('#vTerm').focus();
+    window.CarnetWidget.quickAdd({
+      term: currentCard.native.split(',')[0].slice(0,40),
+      meaning: currentCard.vocab.split('=')[0].trim(),
+      example: currentCard.native,
+    });
   };
 
   // ---------------- init ----------------
   (async function init(){
     await loadVocabBank();
     activeCats = new Set(CATEGORIES.map(c=>c.key));
-    await loadState();
+    loadState();
     renderCats();
-    renderVocab();
     renderStats();
     nextCard();
   })();
 
 })();
 </script>
+<script src="/carnet-widget.js"></script>
 </body>
 </html>

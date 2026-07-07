@@ -41,6 +41,24 @@ async function init() {
       points INTEGER NOT NULL
     );
   `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS vocab_entries (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      term TEXT NOT NULL,
+      meaning TEXT NOT NULL,
+      example TEXT,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
   console.log('[db] schema ready');
 }
 
@@ -86,4 +104,4 @@ async function saveFinishedSession({ code, players, answersFlat }) {
   }
 }
 
-module.exports = { init, saveFinishedSession };
+module.exports = { init, saveFinishedSession, pool };
