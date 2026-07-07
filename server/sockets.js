@@ -31,10 +31,10 @@ function registerSocketHandlers(io) {
       gameManager.broadcastSessionUpdate(session);
     });
 
-    socket.on('session:start', ({ code, roundSeconds } = {}, ack) => {
+    socket.on('session:start', ({ code, roundSeconds, carnetEnabled, gradingMode } = {}, ack) => {
       const session = gameManager.getSession(code);
       if (!session) return ack && ack({ error: 'Code de partie introuvable.' });
-      const result = gameManager.startSession(session, socket.id, roundSeconds);
+      const result = gameManager.startSession(session, socket.id, roundSeconds, carnetEnabled, gradingMode);
       ack && ack(result);
     });
 

@@ -8,6 +8,7 @@
   let carnetOpen = false;
   let authOpen = false;
   let signupMode = false;
+  let carnetGloballyEnabled = true;
 
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -221,6 +222,15 @@
     try { localStorage.setItem(POS_KEY, JSON.stringify({ left: rect.left, top: rect.top })); } catch (e) { /* ignore */ }
   });
 
+  // ---------- enable/disable (e.g. host turns the carnet off for a multiplayer round) ----------
+  function applyCarnetEnabled() {
+    toggleBtn.style.display = carnetGloballyEnabled ? '' : 'none';
+    if (!carnetGloballyEnabled) {
+      carnetOpen = false;
+      modal.classList.remove('open');
+    }
+  }
+
   // ---------- open/close carnet ----------
   toggleBtn.addEventListener('click', () => { carnetOpen = !carnetOpen; modal.classList.toggle('open', carnetOpen); });
   modal.querySelector('.carnet-close').addEventListener('click', () => { carnetOpen = false; modal.classList.remove('open'); });
@@ -384,9 +394,10 @@
     document.getElementById('carnetExample').value = '';
   });
 
-  // ---------- public API for quick-add from index.html ----------
+  // ---------- public API for quick-add from index.html / enable toggle from jouer.html ----------
   window.CarnetWidget = {
     quickAdd(prefill) {
+      if (!carnetGloballyEnabled) return;
       carnetOpen = true;
       modal.classList.add('open');
       if (prefill) {
@@ -395,6 +406,10 @@
         document.getElementById('carnetExample').value = prefill.example || '';
       }
       document.getElementById('carnetTerm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    },
+    setEnabled(enabled) {
+      carnetGloballyEnabled = !!enabled;
+      applyCarnetEnabled();
     },
   };
 

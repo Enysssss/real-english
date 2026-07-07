@@ -10,7 +10,7 @@ const DEFAULT_ROUND_SECONDS = 30;
 const MIN_ROUND_SECONDS = 5;
 const MAX_ROUND_SECONDS = 120;
 const ROUNDS_PER_GAME = 5;
-const POINTS = { oui: 2, presque: 1, non: 0 };
+const POINTS = { oui: 3, presque: 1, non: 0 };
 const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O, 1/I/L
 
 const sessions = new Map();
@@ -84,8 +84,11 @@ function createSession(hostSocketId, hostName) {
     roundDeadline: null,
     answers: new Map(), // `${roundIndex}:${playerId}` -> {text}
     grades: new Map(), // `${roundIndex}:${playerId}` -> {grade, points}
+    votes: new Map(), // `${roundIndex}:${answerPlayerId}:${voterPlayerId}` -> grade (only used in 'players' grading mode)
     playerOrder: [],
     reviewCursor: { roundIndex: 0, playerIdx: 0 },
+    carnetEnabled: true,
+    gradingMode: 'host', // 'host' | 'players'
     createdAt: Date.now(),
   };
   // the host plays too — they just also happen to grade the answers afterwards
@@ -128,6 +131,14 @@ function rejoinSession(session, socketId, name) {
   return { playerId: existing.id };
 }
 
+function eligibleVotersFor(session, answerPlayerId) {
+  return session.playerOrder.filter((id) => {
+    if (id === answerPlayerId) return false;
+    const p = session.players.get(id);
+    return p && p.connected;
+  });
+}
+
 function reviewShowPayload(session) {
   const { roundIndex, playerIdx } = session.reviewCursor;
   const round = session.rounds[roundIndex];
@@ -135,7 +146,9 @@ function reviewShowPayload(session) {
   const player = session.players.get(playerId);
   const key = `${roundIndex}:${playerId}`;
   const answer = session.answers.get(key);
-  const grade = session.grades.get(key);
+  const gradeEntry = session.grades.get(key);
+  const eligibleVoters = eligibleVotersFor(session, playerId);
+  const votedPlayerIds = eligibleVoters.filter((id) => session.votes.has(`${key}:${id}`));
   return {
     phase: 'review',
     roundIndex,
@@ -147,7 +160,12 @@ function reviewShowPayload(session) {
     playerId,
     playerName: player ? player.name : '???',
     answerText: answer ? answer.text : null,
-    grade: grade ? grade.grade : null,
+    grade: gradeEntry ? gradeEntry.grade : null,
+    points: gradeEntry ? gradeEntry.points : null,
+    carnetEnabled: session.carnetEnabled,
+    gradingMode: session.gradingMode,
+    votedPlayerIds,
+    votesNeeded: eligibleVoters.length,
   };
 }
 
@@ -163,6 +181,7 @@ function snapshotFor(session) {
       totalRounds: session.rounds.length,
       fr: round.fr,
       deadline: session.roundDeadline,
+      carnetEnabled: session.carnetEnabled,
     };
   }
   if (session.phase === 'review') {
@@ -174,14 +193,20 @@ function snapshotFor(session) {
   return { phase: session.phase };
 }
 
-function startSession(session, requesterSocketId, roundSeconds) {
+function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, gradingMode) {
   if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut lancer la partie.' };
   if (session.phase !== 'lobby') return { error: 'La partie a déjà commencé.' };
   if (session.players.size === 0) return { error: 'Attends au moins un joueur avant de lancer.' };
+  const normalizedGradingMode = gradingMode === 'players' ? 'players' : 'host';
+  if (normalizedGradingMode === 'players' && session.players.size < 2) {
+    return { error: 'Il faut au moins 2 joueurs pour que tout le monde note.' };
+  }
   const parsed = Number(roundSeconds);
   session.roundSeconds = Number.isFinite(parsed)
     ? Math.min(MAX_ROUND_SECONDS, Math.max(MIN_ROUND_SECONDS, Math.round(parsed)))
     : DEFAULT_ROUND_SECONDS;
+  session.carnetEnabled = carnetEnabled === undefined ? true : !!carnetEnabled;
+  session.gradingMode = normalizedGradingMode;
   session.rounds = pickRounds();
   session.playerOrder = [...session.players.keys()];
   startRound(session, 0);
@@ -198,6 +223,7 @@ function startRound(session, index) {
     totalRounds: session.rounds.length,
     fr: round.fr,
     deadline: session.roundDeadline,
+    carnetEnabled: session.carnetEnabled,
   });
   clearTimeout(session.roundTimer);
   session.roundTimer = setTimeout(() => advanceAfterRound(session), session.roundSeconds * 1000);
@@ -258,21 +284,48 @@ function emitReviewShow(session) {
 }
 
 function gradeAnswer(session, requesterSocketId, grade) {
-  if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut noter.' };
   if (session.phase !== 'review') return { error: "Ce n'est pas la phase de review." };
   if (!(grade in POINTS)) return { error: 'Note invalide.' };
 
   const { roundIndex, playerIdx } = session.reviewCursor;
-  const playerId = session.playerOrder[playerIdx];
-  const key = `${roundIndex}:${playerId}`;
+  const answerPlayerId = session.playerOrder[playerIdx];
+  const key = `${roundIndex}:${answerPlayerId}`;
   if (session.grades.has(key)) return { error: 'Déjà noté.' };
 
-  const player = session.players.get(playerId);
+  if (session.gradingMode === 'players') {
+    const voter = findPlayerBySocket(session, requesterSocketId);
+    if (!voter) return { error: 'Joueur inconnu.' };
+    if (voter.id === answerPlayerId) return { error: 'Tu ne peux pas noter ta propre réponse.' };
+    const voteKey = `${key}:${voter.id}`;
+    if (session.votes.has(voteKey)) return { error: 'Tu as déjà voté.' };
+    session.votes.set(voteKey, grade);
+
+    const eligibleVoters = eligibleVotersFor(session, answerPlayerId);
+    const allVoted = eligibleVoters.every((id) => session.votes.has(`${key}:${id}`));
+    if (!allVoted) {
+      // let everyone see the vote count tick up while we wait on the rest
+      emitReviewShow(session);
+      return {};
+    }
+
+    const totalPoints = eligibleVoters.reduce((sum, id) => sum + POINTS[session.votes.get(`${key}:${id}`)], 0);
+    const points = Math.round(totalPoints / eligibleVoters.length);
+    session.grades.set(key, { grade: 'moyenne', points });
+    const player = session.players.get(answerPlayerId);
+    if (player) player.totalScore += points;
+
+    io.to(session.code).emit('review:graded', { roundIndex, playerId: answerPlayerId, grade: null, points });
+    setTimeout(() => advanceReviewCursor(session), 1400);
+    return {};
+  }
+
+  if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut noter.' };
+  const player = session.players.get(answerPlayerId);
   const points = POINTS[grade];
   session.grades.set(key, { grade, points });
   if (player) player.totalScore += points;
 
-  io.to(session.code).emit('review:graded', { roundIndex, playerId, grade, points });
+  io.to(session.code).emit('review:graded', { roundIndex, playerId: answerPlayerId, grade, points });
 
   // brief pause so everyone can see the grade land before the view moves on
   setTimeout(() => advanceReviewCursor(session), 1400);

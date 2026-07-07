@@ -271,6 +271,7 @@
   socket.on('review:graded', (payload) => {
     if (state.screen === 'review' && state.roundIndex === payload.roundIndex && state.playerId === payload.playerId){
       state.grade = payload.grade;
+      state.points = payload.points;
       render();
     }
   });
@@ -312,6 +313,10 @@
     clearInterval(countdownInterval);
     document.getElementById('chatPanel').style.display = (state.screen === 'home') ? 'none' : 'flex';
     renderChatMessages();
+    const carnetAllowed = (state.screen === 'question' || state.screen === 'review')
+      ? state.carnetEnabled !== false
+      : true;
+    if (window.CarnetWidget && window.CarnetWidget.setEnabled) window.CarnetWidget.setEnabled(carnetAllowed);
     if (state.screen === 'home') renderHome();
     else if (state.screen === 'lobby') renderLobby();
     else if (state.screen === 'question') renderQuestion();
@@ -373,6 +378,19 @@
           ? `
             <label class="muted" style="display:block;margin:14px 0 4px;">Durée par question (secondes)</label>
             <input id="roundSecondsInput" type="number" min="5" max="120" value="30">
+            <label class="muted" style="display:flex;align-items:center;gap:8px;margin:14px 0 4px;">
+              <input id="carnetEnabledInput" type="checkbox" checked style="width:auto;margin:0;">
+              Autoriser l'accès au carnet pendant la partie
+            </label>
+            <label class="muted" style="display:block;margin:14px 0 4px;">Qui note les réponses ?</label>
+            <label class="muted" style="display:flex;align-items:center;gap:8px;margin:4px 0;">
+              <input type="radio" name="gradingMode" value="host" checked style="width:auto;margin:0;">
+              Le chef note
+            </label>
+            <label class="muted" style="display:flex;align-items:center;gap:8px;margin:4px 0 14px;">
+              <input type="radio" name="gradingMode" value="players" style="width:auto;margin:0;">
+              Tout le monde note (moyenne des votes)
+            </label>
             <button id="startBtn" class="btn-primary">Lancer la partie</button>
           `
           : `<div class="muted">En attente que le chef lance la partie…</div>`}
@@ -382,7 +400,9 @@
     if (isHost){
       document.getElementById('startBtn').onclick = () => {
         const roundSeconds = Number(document.getElementById('roundSecondsInput').value) || 30;
-        socket.emit('session:start', { code: me.code, roundSeconds }, (res) => {
+        const carnetEnabled = document.getElementById('carnetEnabledInput').checked;
+        const gradingMode = document.querySelector('input[name="gradingMode"]:checked').value;
+        socket.emit('session:start', { code: me.code, roundSeconds, carnetEnabled, gradingMode }, (res) => {
           if (res && res.error) showError(res.error);
         });
       };
@@ -422,6 +442,38 @@
   function renderReview(){
     const isHost = me.isHost;
     const gradeLabel = { oui:'Oui ! ✓', presque:'Presque…', non:'Non ✗' };
+    const gradeButtonsHtml = `
+      <div class="grade-buttons">
+        <button data-grade="oui" class="btn-grade ok">Oui (+3)</button>
+        <button data-grade="presque" class="btn-grade warn">Presque (+1)</button>
+        <button data-grade="non" class="btn-grade bad">Non (+0)</button>
+      </div>
+    `;
+    const isPlayersMode = state.gradingMode === 'players';
+    const isAuthor = state.playerId === me.playerId;
+    const votedPlayerIds = state.votedPlayerIds || [];
+    const iHaveVoted = votedPlayerIds.includes(me.playerId);
+    const finalized = state.points !== null && state.points !== undefined;
+
+    let bodyExtra;
+    if (finalized){
+      const markLabel = isPlayersMode ? `+${state.points} pt${state.points === 1 ? '' : 's'}` : gradeLabel[state.grade];
+      const markClass = isPlayersMode
+        ? (state.points >= 2 ? 'grade-oui' : state.points >= 1 ? 'grade-presque' : 'grade-non')
+        : `grade-${state.grade}`;
+      bodyExtra = `<div class="grade-mark ${markClass}">${markLabel}</div>`;
+    } else if (isPlayersMode){
+      if (isAuthor){
+        bodyExtra = `<div class="muted">Les autres joueurs notent ta réponse… (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
+      } else if (iHaveVoted){
+        bodyExtra = `<div class="muted">Vote enregistré. En attente des autres… (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
+      } else {
+        bodyExtra = gradeButtonsHtml;
+      }
+    } else {
+      bodyExtra = isHost ? gradeButtonsHtml : `<div class="muted">Le chef est en train de noter…</div>`;
+    }
+
     app.innerHTML = `
       <div class="card paper">
         <div class="round-label">Review — question ${state.roundIndex + 1} / ${state.totalRounds}</div>
@@ -435,26 +487,17 @@
           <span class="label">${escapeHtml(state.playerName)} a répondu</span>
           <div class="answer-text">${state.answerText ? escapeHtml(state.answerText) : '(pas de réponse)'}</div>
         </div>
-        ${state.grade ? `<div class="grade-mark grade-${state.grade}">${gradeLabel[state.grade]}</div>` : ''}
-        ${isHost && !state.grade ? `
-          <div class="grade-buttons">
-            <button data-grade="oui" class="btn-grade ok">Oui</button>
-            <button data-grade="presque" class="btn-grade warn">Presque</button>
-            <button data-grade="non" class="btn-grade bad">Non</button>
-          </div>
-        ` : (!isHost && !state.grade ? `<div class="muted">Le chef est en train de noter…</div>` : '')}
+        ${bodyExtra}
         <div id="errorBox" class="error-box"></div>
       </div>
     `;
-    if (isHost){
-      app.querySelectorAll('.btn-grade').forEach(btn => {
-        btn.onclick = () => {
-          socket.emit('review:grade', { code: me.code, grade: btn.dataset.grade }, (res) => {
-            if (res && res.error) showError(res.error);
-          });
-        };
-      });
-    }
+    app.querySelectorAll('.btn-grade').forEach(btn => {
+      btn.onclick = () => {
+        socket.emit('review:grade', { code: me.code, grade: btn.dataset.grade }, (res) => {
+          if (res && res.error) showError(res.error);
+        });
+      };
+    });
   }
 
   function renderFinished(){
