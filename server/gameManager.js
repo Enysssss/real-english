@@ -103,6 +103,8 @@ function createSession(hostSocketId, hostName) {
     icebreakerVotes: new Map(), // voterPlayerId -> { targetPlayerId, voterName } | { customText, voterName }
     lastIcebreakerTargetId: null,
     pendingAfterIcebreaker: null,
+    icebreakerResultsLog: [], // vote-type icebreaker results, revealed at the end alongside the review
+    icebreakerRevealIndex: 0,
     createdAt: Date.now(),
   };
   // the host plays too — they just also happen to grade the answers afterwards
@@ -378,19 +380,11 @@ function finishIcebreakerVote(session, next) {
     .map((p) => ({ playerId: p.id, name: p.name, count: tallyMap.get(p.id) || 0 }))
     .sort((a, b) => b.count - a.count);
 
-  session.phase = 'icebreaker-results';
-  session.currentIcebreakerResults = {
-    text: session.currentIcebreaker.text,
-    tally,
-    customAnswers,
-  };
+  // Don't reveal now — stash it and keep the round moving. It gets shown
+  // during the end-of-game review, right alongside the translation reveal.
+  session.icebreakerResultsLog.push({ text: session.currentIcebreaker.text, tally, customAnswers });
   session.currentIcebreaker = null;
-  io.to(session.code).emit('icebreaker:results', session.currentIcebreakerResults);
-
-  armIcebreakerAdvance(session, () => {
-    session.currentIcebreakerResults = null;
-    next();
-  }, ICEBREAKER_RESULTS_DURATION_MS);
+  next();
 }
 
 function skipIcebreaker(session, requesterSocketId) {
@@ -513,7 +507,33 @@ function advanceReviewCursor(session) {
     emitReviewShow(session);
     return;
   }
-  finishSession(session);
+  startIcebreakerReveal(session);
+}
+
+function startIcebreakerReveal(session) {
+  session.icebreakerRevealIndex = 0;
+  showNextIcebreakerReveal(session);
+}
+
+function showNextIcebreakerReveal(session) {
+  if (session.icebreakerRevealIndex >= session.icebreakerResultsLog.length) {
+    finishSession(session);
+    return;
+  }
+  const result = session.icebreakerResultsLog[session.icebreakerRevealIndex];
+  session.phase = 'icebreaker-results';
+  session.currentIcebreakerResults = {
+    ...result,
+    index: session.icebreakerRevealIndex,
+    total: session.icebreakerResultsLog.length,
+  };
+  io.to(session.code).emit('icebreaker:results', session.currentIcebreakerResults);
+
+  armIcebreakerAdvance(session, () => {
+    session.icebreakerRevealIndex += 1;
+    session.currentIcebreakerResults = null;
+    showNextIcebreakerReveal(session);
+  }, ICEBREAKER_RESULTS_DURATION_MS);
 }
 
 async function finishSession(session) {

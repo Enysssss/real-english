@@ -612,9 +612,10 @@
     const tally = state.tally || [];
     const maxCount = Math.max(1, ...tally.map(t => t.count));
     const customAnswers = state.customAnswers || [];
+    const hasProgress = Number.isInteger(state.index) && Number.isInteger(state.total);
     app.innerHTML = `
       <div class="card paper">
-        <div class="round-label">Résultats 📊</div>
+        <div class="round-label">Résultats du vote 📊${hasProgress ? ` (${state.index + 1} / ${state.total})` : ''}</div>
         <div class="icebreaker-text">${escapeHtml(state.text)}</div>
         <div class="vote-chart">
           ${tally.map(t => `
@@ -631,7 +632,7 @@
         ` : ''}
         ${me.isHost
           ? `<button id="icebreakerSkipBtn" class="btn-primary">Continuer</button>`
-          : `<div class="muted">La question suivante arrive dans quelques secondes…</div>`}
+          : `<div class="muted">La suite arrive dans quelques secondes…</div>`}
         <div id="errorBox" class="error-box"></div>
       </div>
     `;
