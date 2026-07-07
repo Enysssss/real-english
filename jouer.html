@@ -38,10 +38,51 @@
     pointer-events:none;
   }
 
+  /* ---------- life & motion ---------- */
+  @keyframes cardEnter{
+    from{ opacity:0; transform:translateY(16px) scale(.97); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+  @keyframes pulseRed{
+    0%,100%{ transform:scale(1); }
+    50%{ transform:scale(1.14); }
+  }
+  @keyframes popIn{
+    0%{ opacity:0; transform:scale(.4) rotate(-3deg); }
+    65%{ opacity:1; transform:scale(1.18) rotate(-3deg); }
+    100%{ opacity:1; transform:scale(1) rotate(-3deg); }
+  }
+  @keyframes breathe{
+    0%,100%{ filter:drop-shadow(0 0 0 rgba(178,58,72,0)); }
+    50%{ filter:drop-shadow(0 0 10px rgba(178,58,72,.45)); }
+  }
+  @keyframes dotBlink{
+    0%,80%,100%{ opacity:.25; }
+    40%{ opacity:1; }
+  }
+  @keyframes confettiFall{
+    to{ transform:translateY(108vh) rotate(600deg); opacity:0; }
+  }
+  .timer.low{ animation:pulseRed .55s ease-in-out infinite; }
+  .waiting-dots span{ display:inline-block; animation:dotBlink 1.3s infinite; }
+  .waiting-dots span:nth-child(2){ animation-delay:.18s; }
+  .waiting-dots span:nth-child(3){ animation-delay:.36s; }
+  .postmark svg{ animation:breathe 2.6s ease-in-out infinite; }
+  .confetti-piece{
+    position:fixed; top:-12px; z-index:10000; pointer-events:none;
+    animation-name:confettiFall; animation-timing-function:linear; animation-fill-mode:forwards;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .card, .timer.low, .waiting-dots span, .postmark svg, .grade-mark, .confetti-piece{
+      animation:none !important;
+    }
+  }
+
   .card{
     padding:26px 26px 24px;
     margin-bottom:22px;
     box-shadow:0 14px 26px rgba(0,0,0,.35);
+    animation:cardEnter .38s cubic-bezier(.16,1,.3,1);
     clip-path:polygon(0.00% 0.00%, 7.14% 0.33%, 14.29% 1.84%, 21.43% 1.30%, 28.57% 1.54%, 35.71% 0.92%, 42.86% 1.66%, 50.00% 1.41%, 57.14% 2.31%, 64.29% 0.55%, 71.43% 0.19%, 78.57% 0.93%, 85.71% 1.91%, 92.86% 0.94%, 100.00% 0.00%, 97.90% 7.14%, 98.86% 14.29%, 99.74% 21.43%, 99.85% 28.57%, 99.00% 35.71%, 99.93% 42.86%, 99.53% 50.00%, 98.17% 57.14%, 99.35% 64.29%, 99.86% 71.43%, 98.45% 78.57%, 99.90% 85.71%, 98.58% 92.86%, 100.00% 100.00%, 92.86% 99.87%, 85.71% 98.95%, 78.57% 97.94%, 71.43% 98.96%, 64.29% 98.21%, 57.14% 97.79%, 50.00% 98.49%, 42.86% 99.84%, 35.71% 99.62%, 28.57% 99.65%, 21.43% 98.76%, 14.29% 100.00%, 7.14% 98.46%, 0.00% 100.00%, 0.29% 92.86%, 0.42% 85.71%, 0.10% 78.57%, 2.30% 71.43%, 1.04% 64.29%, 0.35% 57.14%, 1.85% 50.00%, 0.81% 42.86%, 1.81% 35.71%, 0.52% 28.57%, 1.14% 21.43%, 2.23% 14.29%, 0.35% 7.14%);
   }
   .card h2{
@@ -176,6 +217,7 @@
     font-family:"Caveat", cursive; font-weight:700; font-size:42px;
     text-align:center; margin:6px 0 18px; transform:rotate(-3deg);
     text-decoration:underline wavy; text-decoration-color:currentColor; text-underline-offset:6px;
+    animation:popIn .5s cubic-bezier(.34,1.56,.64,1);
   }
   .grade-mark.grade-oui{ color:var(--ok); }
   .grade-mark.grade-presque{ color:var(--warn); }
@@ -262,6 +304,45 @@
 
   function escapeHtml(str){
     return String(str).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function waitingDots(){
+    return '<span class="waiting-dots"><span>.</span><span>.</span><span>.</span></span>';
+  }
+
+  // shared ticking countdown used by every timed screen — also pulses the
+  // timer red under 5s so a static page doesn't feel stalled while it waits
+  function startCountdown(deadline){
+    const tick = () => {
+      const remainingMs = deadline - Date.now();
+      const remaining = Math.max(0, Math.ceil(remainingMs / 1000));
+      const timerEl = document.getElementById('timerDisplay');
+      if (timerEl){
+        timerEl.textContent = remaining + 's';
+        timerEl.classList.toggle('low', remaining <= 5 && remainingMs > 0);
+      }
+      if (remainingMs <= 0) clearInterval(countdownInterval);
+    };
+    tick();
+    countdownInterval = setInterval(tick, 250);
+  }
+
+  function launchConfetti(){
+    const colors = ['#b23a48', '#c9a24b', '#3f6b91', '#4c7a5b'];
+    const pieceCount = 40;
+    for (let i = 0; i < pieceCount; i++){
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      const size = 6 + Math.random() * 6;
+      piece.style.left = (Math.random() * 100) + 'vw';
+      piece.style.width = size + 'px';
+      piece.style.height = (size * 0.4) + 'px';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.animationDuration = (2.2 + Math.random() * 1.6) + 's';
+      piece.style.animationDelay = (Math.random() * 0.5) + 's';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 4500);
+    }
   }
 
   function postmarkSvg(code){
@@ -438,7 +519,7 @@
         <div class="muted" style="text-align:center;">Chef : ${escapeHtml(state.hostName || '')}</div>
         <h2 style="margin-top:18px;">Joueurs (${players.length})</h2>
         <ul class="player-list">
-          ${players.map(p => `<li>${escapeHtml(p.name)}${p.connected ? '' : ' (déconnecté)'}</li>`).join('') || '<li class="muted">En attente de joueurs…</li>'}
+          ${players.map(p => `<li>${escapeHtml(p.name)}${p.connected ? '' : ' (déconnecté)'}</li>`).join('') || `<li class="muted">En attente de joueurs${waitingDots()}</li>`}
         </ul>
         ${isHost
           ? `
@@ -467,7 +548,7 @@
             </label>
             <button id="startBtn" class="btn-primary">Lancer la partie</button>
           `
-          : `<div class="muted">En attente que le chef lance la partie…</div>`}
+          : `<div class="muted">En attente que le chef lance la partie${waitingDots()}</div>`}
         <div id="errorBox" class="error-box"></div>
       </div>
     `;
@@ -503,15 +584,7 @@
         statusEl.textContent = (res && res.error) ? res.error : 'Réponse envoyée ✓';
       });
     };
-    const tick = () => {
-      const remainingMs = state.deadline - Date.now();
-      const remaining = Math.max(0, Math.ceil(remainingMs / 1000));
-      const timerEl = document.getElementById('timerDisplay');
-      if (timerEl) timerEl.textContent = remaining + 's';
-      if (remainingMs <= 0) clearInterval(countdownInterval);
-    };
-    tick();
-    countdownInterval = setInterval(tick, 250);
+    startCountdown(state.deadline);
   }
 
   function renderIcebreaker(){
@@ -527,7 +600,7 @@
         <div class="timer" id="timerDisplay"></div>
         ${me.isHost
           ? `<button id="icebreakerSkipBtn" class="btn-primary">Passer</button>`
-          : `<div class="muted">La question suivante arrive dans quelques secondes…</div>`}
+          : `<div class="muted">La question suivante arrive dans quelques secondes${waitingDots()}</div>`}
         <div id="errorBox" class="error-box"></div>
       </div>
     `;
@@ -538,15 +611,7 @@
         });
       };
     }
-    const tick = () => {
-      const remainingMs = state.deadline - Date.now();
-      const remaining = Math.max(0, Math.ceil(remainingMs / 1000));
-      const timerEl = document.getElementById('timerDisplay');
-      if (timerEl) timerEl.textContent = remaining + 's';
-      if (remainingMs <= 0) clearInterval(countdownInterval);
-    };
-    tick();
-    countdownInterval = setInterval(tick, 250);
+    startCountdown(state.deadline);
   }
 
   function renderIcebreakerVote(){
@@ -558,7 +623,7 @@
         <div class="round-label">Pause fun 🎉 — vote</div>
         <div class="icebreaker-text">${escapeHtml(state.text)}</div>
         ${iHaveVoted
-          ? `<div class="muted" style="text-align:center;margin-bottom:12px;">Vote enregistré ! En attente des autres… (${votedPlayerIds.length} / ${options.length})</div>`
+          ? `<div class="muted" style="text-align:center;margin-bottom:12px;">Vote enregistré ! En attente des autres${waitingDots()} (${votedPlayerIds.length} / ${options.length})</div>`
           : `
             <div class="vote-options">
               ${options.map(o => `<button class="vote-option-btn" data-player-id="${escapeHtml(o.id)}">${escapeHtml(o.name)}</button>`).join('')}
@@ -597,15 +662,7 @@
         });
       };
     }
-    const tick = () => {
-      const remainingMs = state.deadline - Date.now();
-      const remaining = Math.max(0, Math.ceil(remainingMs / 1000));
-      const timerEl = document.getElementById('timerDisplay');
-      if (timerEl) timerEl.textContent = remaining + 's';
-      if (remainingMs <= 0) clearInterval(countdownInterval);
-    };
-    tick();
-    countdownInterval = setInterval(tick, 250);
+    startCountdown(state.deadline);
   }
 
   function renderIcebreakerResults(){
@@ -621,7 +678,7 @@
           ${tally.map(t => `
             <div class="vote-chart-row">
               <div class="vote-chart-label"><span>${escapeHtml(t.name)}</span><span>${t.count}</span></div>
-              <div class="vote-chart-track"><div class="vote-chart-fill" style="width:${Math.round((t.count / maxCount) * 100)}%"></div></div>
+              <div class="vote-chart-track"><div class="vote-chart-fill" data-target="${Math.round((t.count / maxCount) * 100)}" style="width:0%"></div></div>
             </div>
           `).join('')}
         </div>
@@ -632,10 +689,19 @@
         ` : ''}
         ${me.isHost
           ? `<button id="icebreakerSkipBtn" class="btn-primary">Continuer</button>`
-          : `<div class="muted">La suite arrive dans quelques secondes…</div>`}
+          : `<div class="muted">La suite arrive dans quelques secondes${waitingDots()}</div>`}
         <div id="errorBox" class="error-box"></div>
       </div>
     `;
+    // bars start at 0% in the markup so this width jump is what animates —
+    // double rAF makes sure the browser paints the 0% frame first
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        app.querySelectorAll('.vote-chart-fill').forEach((el) => {
+          el.style.width = el.dataset.target + '%';
+        });
+      });
+    });
     if (me.isHost){
       document.getElementById('icebreakerSkipBtn').onclick = () => {
         socket.emit('icebreaker:skip', { code: me.code }, (res) => {
@@ -671,14 +737,14 @@
       bodyExtra = `<div class="grade-mark ${markClass}">${markLabel}</div>`;
     } else if (isVotingMode){
       if (authorExcluded){
-        bodyExtra = `<div class="muted">Les autres joueurs notent ta réponse… (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
+        bodyExtra = `<div class="muted">Les autres joueurs notent ta réponse${waitingDots()} (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
       } else if (iHaveVoted){
-        bodyExtra = `<div class="muted">Vote enregistré. En attente des autres… (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
+        bodyExtra = `<div class="muted">Vote enregistré. En attente des autres${waitingDots()} (${votedPlayerIds.length} / ${state.votesNeeded})</div>`;
       } else {
         bodyExtra = gradeButtonsHtml;
       }
     } else {
-      bodyExtra = isHost ? gradeButtonsHtml : `<div class="muted">Le chef est en train de noter…</div>`;
+      bodyExtra = isHost ? gradeButtonsHtml : `<div class="muted">Le chef est en train de noter${waitingDots()}</div>`;
     }
 
     app.innerHTML = `
@@ -722,6 +788,7 @@
       state = { screen:'home' };
       render();
     };
+    launchConfetti();
   }
 
   (function init(){
