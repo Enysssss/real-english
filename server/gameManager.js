@@ -326,13 +326,28 @@ async function finishSession(session) {
   setTimeout(() => sessions.delete(session.code), 30 * 60 * 1000);
 }
 
+function allPlayersDisconnected(session) {
+  return [...session.players.values()].every((p) => !p.connected);
+}
+
 function disconnectSocket(socketId) {
   for (const session of sessions.values()) {
+    let matched = false;
     for (const player of session.players.values()) {
       if (player.socketId === socketId) {
         player.connected = false;
-        broadcastSessionUpdate(session);
+        matched = true;
       }
+    }
+    if (!matched) continue;
+
+    if (allPlayersDisconnected(session)) {
+      // Everyone's gone — kill the session for good rather than leaving it
+      // around for someone to stumble back into later.
+      clearTimeout(session.roundTimer);
+      sessions.delete(session.code);
+    } else {
+      broadcastSessionUpdate(session);
     }
   }
 }
