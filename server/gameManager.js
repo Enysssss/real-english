@@ -6,9 +6,9 @@ const vocabBank = JSON.parse(
   fs.readFileSync(path.join(__dirname, '..', 'data', 'vocab.json'), 'utf8')
 ).items;
 
-const dareBank = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'data', 'dares.json'), 'utf8')
-).dares;
+const icebreakerBank = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '..', 'data', 'icebreakers.json'), 'utf8')
+).icebreakers;
 
 const DEFAULT_ROUND_SECONDS = 30;
 const MIN_ROUND_SECONDS = 5;
@@ -16,8 +16,8 @@ const MAX_ROUND_SECONDS = 120;
 const ROUNDS_PER_GAME = 5;
 const POINTS = { oui: 3, presque: 1, non: 0 };
 const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O, 1/I/L
-const DARE_CHANCE = 0.45;
-const DARE_DURATION_MS = 8000;
+const ICEBREAKER_CHANCE = 0.45;
+const ICEBREAKER_DURATION_MS = 20000;
 
 const sessions = new Map();
 let io = null;
@@ -95,11 +95,11 @@ function createSession(hostSocketId, hostName) {
     reviewCursor: { roundIndex: 0, playerIdx: 0 },
     carnetEnabled: true,
     gradingMode: 'host', // 'host' | 'peers' | 'everyone'
-    dareEnabled: false,
-    dareTimer: null,
-    currentDare: null,
-    lastDareTargetId: null,
-    pendingAfterDare: null,
+    icebreakersEnabled: false,
+    icebreakerTimer: null,
+    currentIcebreaker: null,
+    lastIcebreakerTargetId: null,
+    pendingAfterIcebreaker: null,
     createdAt: Date.now(),
   };
   // the host plays too — they just also happen to grade the answers afterwards
@@ -198,8 +198,8 @@ function snapshotFor(session) {
   if (session.phase === 'review') {
     return reviewShowPayload(session);
   }
-  if (session.phase === 'dare') {
-    return { phase: 'dare', ...session.currentDare };
+  if (session.phase === 'icebreaker') {
+    return { phase: 'icebreaker', ...session.currentIcebreaker };
   }
   if (session.phase === 'finished') {
     return { phase: 'finished', leaderboard: leaderboard(session) };
@@ -207,7 +207,7 @@ function snapshotFor(session) {
   return { phase: session.phase };
 }
 
-function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, gradingMode, dareEnabled) {
+function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, gradingMode, icebreakersEnabled) {
   if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut lancer la partie.' };
   if (session.phase !== 'lobby') return { error: 'La partie a déjà commencé.' };
   if (session.players.size === 0) return { error: 'Attends au moins un joueur avant de lancer.' };
@@ -221,7 +221,7 @@ function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, g
     : DEFAULT_ROUND_SECONDS;
   session.carnetEnabled = carnetEnabled === undefined ? true : !!carnetEnabled;
   session.gradingMode = normalizedGradingMode;
-  session.dareEnabled = !!dareEnabled;
+  session.icebreakersEnabled = !!icebreakersEnabled;
   session.rounds = pickRounds();
   session.playerOrder = [...session.players.keys()];
   startRound(session, 0);
@@ -253,46 +253,52 @@ function advanceAfterRound(session) {
       startReview(session);
     }
   };
-  maybeTriggerDare(session, proceed);
+  maybeTriggerIcebreaker(session, proceed);
 }
 
-function maybeTriggerDare(session, next) {
-  if (!session.dareEnabled || session.playerOrder.length === 0 || Math.random() > DARE_CHANCE) {
+function maybeTriggerIcebreaker(session, next) {
+  if (!session.icebreakersEnabled || session.playerOrder.length === 0 || Math.random() > ICEBREAKER_CHANCE) {
     next();
     return;
   }
-  const candidates = session.playerOrder.filter((id) => id !== session.lastDareTargetId);
-  const pool = candidates.length > 0 ? candidates : session.playerOrder;
-  const targetId = pool[Math.floor(Math.random() * pool.length)];
-  const target = session.players.get(targetId);
-  const targetName = target ? target.name : '???';
-  const rawText = dareBank[Math.floor(Math.random() * dareBank.length)];
+  const rawText = icebreakerBank[Math.floor(Math.random() * icebreakerBank.length)];
+  const needsTarget = rawText.includes('{name}');
 
-  session.lastDareTargetId = targetId;
-  session.phase = 'dare';
-  session.currentDare = {
+  let targetId = null;
+  let targetName = null;
+  if (needsTarget) {
+    const candidates = session.playerOrder.filter((id) => id !== session.lastIcebreakerTargetId);
+    const pool = candidates.length > 0 ? candidates : session.playerOrder;
+    targetId = pool[Math.floor(Math.random() * pool.length)];
+    const target = session.players.get(targetId);
+    targetName = target ? target.name : '???';
+    session.lastIcebreakerTargetId = targetId;
+  }
+
+  session.phase = 'icebreaker';
+  session.currentIcebreaker = {
     targetPlayerId: targetId,
     targetName,
-    text: rawText.replace('{name}', targetName),
-    deadline: Date.now() + DARE_DURATION_MS,
+    text: needsTarget ? rawText.replace('{name}', targetName) : rawText,
+    deadline: Date.now() + ICEBREAKER_DURATION_MS,
   };
-  io.to(session.code).emit('dare:show', session.currentDare);
+  io.to(session.code).emit('icebreaker:show', session.currentIcebreaker);
 
   const advance = () => {
-    session.pendingAfterDare = null;
-    session.currentDare = null;
+    session.pendingAfterIcebreaker = null;
+    session.currentIcebreaker = null;
     next();
   };
-  session.pendingAfterDare = advance;
-  clearTimeout(session.dareTimer);
-  session.dareTimer = setTimeout(advance, DARE_DURATION_MS);
+  session.pendingAfterIcebreaker = advance;
+  clearTimeout(session.icebreakerTimer);
+  session.icebreakerTimer = setTimeout(advance, ICEBREAKER_DURATION_MS);
 }
 
-function skipDare(session, requesterSocketId) {
-  if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut passer ce gage.' };
-  if (session.phase !== 'dare') return { error: "Ce n'est pas la phase de gage." };
-  clearTimeout(session.dareTimer);
-  const advance = session.pendingAfterDare;
+function skipIcebreaker(session, requesterSocketId) {
+  if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut passer cette pause.' };
+  if (session.phase !== 'icebreaker') return { error: "Ce n'est pas la phase de pause fun." };
+  clearTimeout(session.icebreakerTimer);
+  const advance = session.pendingAfterIcebreaker;
   if (advance) advance();
   return {};
 }
@@ -459,7 +465,7 @@ function disconnectSocket(socketId) {
       // Everyone's gone — kill the session for good rather than leaving it
       // around for someone to stumble back into later.
       clearTimeout(session.roundTimer);
-      clearTimeout(session.dareTimer);
+      clearTimeout(session.icebreakerTimer);
       sessions.delete(session.code);
     } else {
       broadcastSessionUpdate(session);
@@ -476,7 +482,7 @@ module.exports = {
   startSession,
   submitAnswer,
   gradeAnswer,
-  skipDare,
+  skipIcebreaker,
   sendChatMessage,
   snapshotFor,
   broadcastSessionUpdate,

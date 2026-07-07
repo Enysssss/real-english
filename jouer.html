@@ -97,13 +97,17 @@
     margin-bottom:16px;
   }
 
-  .dare-target{
+  .icebreaker-target{
     font-family:"Special Elite", monospace; font-size:14px; text-transform:uppercase;
     letter-spacing:.06em; color:var(--red); text-align:center; margin-bottom:10px;
   }
-  .dare-text{
+  .icebreaker-text{
     font-family:"Source Serif 4", serif; font-style:italic; font-size:clamp(19px,3vw,24px);
     line-height:1.4; color:var(--ink); margin-bottom:16px; text-align:center;
+  }
+  .icebreaker-hint{
+    font-family:"IBM Plex Sans", sans-serif; font-size:12.5px; color:var(--ink-soft);
+    text-align:center; margin-bottom:14px;
   }
 
   .ref-answers{
@@ -254,8 +258,8 @@
       state = { screen:'question', ...snapshot };
     } else if (snapshot.phase === 'review'){
       state = { screen:'review', ...snapshot };
-    } else if (snapshot.phase === 'dare'){
-      state = { screen:'dare', ...snapshot };
+    } else if (snapshot.phase === 'icebreaker'){
+      state = { screen:'icebreaker', ...snapshot };
     } else if (snapshot.phase === 'finished'){
       state = { screen:'finished', leaderboard: snapshot.leaderboard };
     }
@@ -279,8 +283,8 @@
     render();
   });
 
-  socket.on('dare:show', (payload) => {
-    state = { screen:'dare', ...payload };
+  socket.on('icebreaker:show', (payload) => {
+    state = { screen:'icebreaker', ...payload };
     render();
   });
 
@@ -337,7 +341,7 @@
     else if (state.screen === 'lobby') renderLobby();
     else if (state.screen === 'question') renderQuestion();
     else if (state.screen === 'review') renderReview();
-    else if (state.screen === 'dare') renderDare();
+    else if (state.screen === 'icebreaker') renderIcebreaker();
     else if (state.screen === 'finished') renderFinished();
   }
 
@@ -413,8 +417,8 @@
               Tout le monde vote (moyenne), sauf celui dont c'est la réponse
             </label>
             <label class="muted" style="display:flex;align-items:center;gap:8px;margin:4px 0 14px;">
-              <input id="dareEnabledInput" type="checkbox" style="width:auto;margin:0;">
-              Activer les mini-défis/gages surprise entre les questions
+              <input id="icebreakersEnabledInput" type="checkbox" style="width:auto;margin:0;">
+              Pauses fun surprise entre les questions (à répondre dans le chat, en anglais)
             </label>
             <button id="startBtn" class="btn-primary">Lancer la partie</button>
           `
@@ -427,8 +431,8 @@
         const roundSeconds = Number(document.getElementById('roundSecondsInput').value) || 30;
         const carnetEnabled = document.getElementById('carnetEnabledInput').checked;
         const gradingMode = document.querySelector('input[name="gradingMode"]:checked').value;
-        const dareEnabled = document.getElementById('dareEnabledInput').checked;
-        socket.emit('session:start', { code: me.code, roundSeconds, carnetEnabled, gradingMode, dareEnabled }, (res) => {
+        const icebreakersEnabled = document.getElementById('icebreakersEnabledInput').checked;
+        socket.emit('session:start', { code: me.code, roundSeconds, carnetEnabled, gradingMode, icebreakersEnabled }, (res) => {
           if (res && res.error) showError(res.error);
         });
       };
@@ -465,23 +469,25 @@
     countdownInterval = setInterval(tick, 250);
   }
 
-  function renderDare(){
-    const isTarget = state.targetPlayerId === me.playerId;
+  function renderIcebreaker(){
+    const hasTarget = !!state.targetPlayerId;
+    const isTarget = hasTarget && state.targetPlayerId === me.playerId;
     app.innerHTML = `
       <div class="card paper">
-        <div class="round-label">Pause gage 🎲</div>
-        <div class="dare-target">${isTarget ? "C'est toi !" : escapeHtml(state.targetName)}</div>
-        <div class="dare-text">${escapeHtml(state.text)}</div>
+        <div class="round-label">Pause fun 🎉</div>
+        ${hasTarget ? `<div class="icebreaker-target">${isTarget ? "It's about YOU!" : escapeHtml(state.targetName)}</div>` : ''}
+        <div class="icebreaker-text">${escapeHtml(state.text)}</div>
+        <div class="icebreaker-hint">Réponds dans le chat, en anglais 🇬🇧 !</div>
         <div class="timer" id="timerDisplay"></div>
         ${me.isHost
-          ? `<button id="dareSkipBtn" class="btn-primary">Passer</button>`
+          ? `<button id="icebreakerSkipBtn" class="btn-primary">Passer</button>`
           : `<div class="muted">La question suivante arrive dans quelques secondes…</div>`}
         <div id="errorBox" class="error-box"></div>
       </div>
     `;
     if (me.isHost){
-      document.getElementById('dareSkipBtn').onclick = () => {
-        socket.emit('dare:skip', { code: me.code }, (res) => {
+      document.getElementById('icebreakerSkipBtn').onclick = () => {
+        socket.emit('icebreaker:skip', { code: me.code }, (res) => {
           if (res && res.error) showError(res.error);
         });
       };
