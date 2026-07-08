@@ -13,10 +13,13 @@ const icebreakerBank = JSON.parse(
 const DEFAULT_ROUND_SECONDS = 30;
 const MIN_ROUND_SECONDS = 5;
 const MAX_ROUND_SECONDS = 120;
-const ROUNDS_PER_GAME = 5;
+const DEFAULT_QUESTIONS_COUNT = 5;
+const MIN_QUESTIONS_COUNT = 3;
+const MAX_QUESTIONS_COUNT = 15;
 const POINTS = { oui: 3, presque: 1, non: 0 };
 const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O, 1/I/L
-const ICEBREAKER_CHANCE = 0.45;
+const DEFAULT_ICEBREAKER_CHANCE = 0.45;
+const MAX_ICEBREAKER_CHANCE = 0.8;
 const ICEBREAKER_DURATION_MS = 20000;
 const ICEBREAKER_RESULTS_DURATION_MS = 6000;
 const AVATAR_KEYS = ['pigeon', 'stamp', 'envelope', 'seal', 'quill', 'compass'];
@@ -44,9 +47,9 @@ function generateCode() {
   return code;
 }
 
-function pickRounds() {
+function pickRounds(count) {
   const shuffled = [...vocabBank].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, ROUNDS_PER_GAME).map((item) => ({
+  return shuffled.slice(0, count).map((item) => ({
     vocabId: item.id,
     fr: item.fr,
     referenceAnswers: item.en,
@@ -102,7 +105,9 @@ function createSession(hostSocketId, hostName, hostAvatar) {
     reviewCursor: { roundIndex: 0, playerIdx: 0 },
     carnetEnabled: true,
     gradingMode: 'host', // 'host' | 'peers' | 'everyone'
+    questionsCount: DEFAULT_QUESTIONS_COUNT,
     icebreakersEnabled: false,
+    icebreakerChance: DEFAULT_ICEBREAKER_CHANCE,
     icebreakerTimer: null,
     currentIcebreaker: null,
     currentIcebreakerResults: null,
@@ -223,7 +228,7 @@ function snapshotFor(session) {
   return { phase: session.phase };
 }
 
-function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, gradingMode, icebreakersEnabled) {
+function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, gradingMode, icebreakersEnabled, questionsCount, funProportion) {
   if (requesterSocketId !== session.hostSocketId) return { error: 'Seul le chef peut lancer la partie.' };
   if (session.phase !== 'lobby') return { error: 'La partie a déjà commencé.' };
   if (session.players.size === 0) return { error: 'Attends au moins un joueur avant de lancer.' };
@@ -235,10 +240,18 @@ function startSession(session, requesterSocketId, roundSeconds, carnetEnabled, g
   session.roundSeconds = Number.isFinite(parsed)
     ? Math.min(MAX_ROUND_SECONDS, Math.max(MIN_ROUND_SECONDS, Math.round(parsed)))
     : DEFAULT_ROUND_SECONDS;
+  const parsedCount = Number(questionsCount);
+  session.questionsCount = Number.isFinite(parsedCount)
+    ? Math.min(MAX_QUESTIONS_COUNT, Math.max(MIN_QUESTIONS_COUNT, Math.round(parsedCount)))
+    : DEFAULT_QUESTIONS_COUNT;
+  const parsedFun = Number(funProportion);
+  session.icebreakerChance = Number.isFinite(parsedFun)
+    ? Math.min(MAX_ICEBREAKER_CHANCE, Math.max(0, parsedFun / 100))
+    : DEFAULT_ICEBREAKER_CHANCE;
   session.carnetEnabled = carnetEnabled === undefined ? true : !!carnetEnabled;
   session.gradingMode = normalizedGradingMode;
   session.icebreakersEnabled = !!icebreakersEnabled;
-  session.rounds = pickRounds();
+  session.rounds = pickRounds(session.questionsCount);
   session.playerOrder = [...session.players.keys()];
   startRound(session, 0);
   return {};
@@ -273,7 +286,7 @@ function advanceAfterRound(session) {
 }
 
 function maybeTriggerIcebreaker(session, next) {
-  if (!session.icebreakersEnabled || session.playerOrder.length === 0 || Math.random() > ICEBREAKER_CHANCE) {
+  if (!session.icebreakersEnabled || session.playerOrder.length === 0 || Math.random() > session.icebreakerChance) {
     next();
     return;
   }
