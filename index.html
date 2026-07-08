@@ -9,37 +9,117 @@
 <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style-shared.css">
 <style>
+  /* ---------- page: white/cream, not the dark night-sky look ---------- */
+  body{ background:#f4efe0; color:var(--ink); }
+
   /* ---------- header ---------- */
-  header{ text-align:center; margin-bottom:28px; }
+  header{ text-align:center; margin-bottom:22px; }
   .eyebrow{
     font-family:"IBM Plex Mono", monospace;
     letter-spacing:.22em;
     font-size:11px;
-    color:var(--brass-light);
+    color:var(--brass);
     text-transform:uppercase;
     margin-bottom:10px;
   }
   h1{
     font-family:"Special Elite", monospace;
     font-weight:400;
-    font-size:clamp(28px,5vw,44px);
+    font-size:clamp(26px,5vw,40px);
     margin:0 0 10px;
-    color:#f6efd9;
+    color:var(--ink);
     line-height:1.15;
   }
   .sub{
     font-family:"Source Serif 4", serif;
     font-style:italic;
-    color:#b9c3d1;
-    font-size:15px;
-    max-width:520px;
+    color:var(--ink-soft);
+    font-size:14.5px;
+    max-width:480px;
     margin:0 auto;
+  }
+
+  /* ---------- landing card (Gartic-style: tabs + central action) ---------- */
+  .landing-wrap{ max-width:460px; margin:26px auto 0; transition:max-width .2s ease; }
+  .landing-wrap.solo-active{ max-width:880px; }
+  .landing-card{
+    position:relative;
+    background:var(--paper); color:var(--ink);
+    border-radius:var(--radius);
+    padding:24px 24px 26px;
+    box-shadow:0 18px 40px rgba(0,0,0,.16), 0 2px 0 var(--paper-shadow) inset;
+  }
+  .landing-tabs{ display:flex; gap:8px; margin-bottom:22px; }
+  .landing-tab{
+    flex:1; font-family:"IBM Plex Mono", monospace; font-size:12px; letter-spacing:.04em;
+    padding:10px 8px; border-radius:999px; border:1.5px dashed rgba(32,41,58,.28);
+    background:transparent; color:var(--ink-soft); cursor:pointer; text-transform:uppercase;
+    transition:transform .12s ease, background .15s ease, border-color .15s ease, color .15s ease;
+  }
+  .landing-tab:hover{ transform:translateY(-1px); }
+  .landing-tab.active{
+    background:var(--ink); border-color:var(--ink); border-style:solid; color:var(--paper); font-weight:600;
+  }
+  .landing-panel{ display:none; }
+  .landing-panel.active{ display:block; }
+
+  .landing-hint{
+    text-align:center; font-size:12.5px; color:var(--ink-soft); margin:-4px 0 16px;
+    font-family:"Source Serif 4", serif; font-style:italic;
+  }
+
+  .avatar-grid{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom:18px; }
+  .avatar-btn{
+    width:54px; height:54px; border-radius:50%; border:2.5px solid transparent;
+    background:rgba(32,41,58,.05); cursor:pointer; display:flex; align-items:center; justify-content:center;
+    padding:9px; transition:transform .12s ease, border-color .15s ease, background .15s ease;
+  }
+  .avatar-btn:hover{ transform:translateY(-2px); }
+  .avatar-btn.selected{ border-color:var(--brass); background:rgba(180,134,58,.16); }
+  .avatar-icon{ display:block; }
+  .avatar-icon svg{ width:100%; height:100%; display:block; }
+
+  .landing-card input{
+    width:100%; background:transparent; border:none; border-bottom:2px solid rgba(32,41,58,.3);
+    padding:10px 2px 10px; color:var(--ink); font-family:"IBM Plex Sans", sans-serif;
+    font-size:14px; margin-bottom:14px;
+  }
+  .landing-card input:focus{ outline:none; border-bottom-color:var(--blue); }
+  .landing-card input::placeholder{ color:#8b8060; font-style:italic; }
+
+  .landing-actions{ display:flex; flex-direction:column; gap:10px; margin-top:2px; }
+  .landing-btn-primary{
+    width:100%; background:var(--red); color:#fff6ea; padding:14px 20px; border-radius:8px;
+    font-family:"Special Elite", monospace; font-size:15px; letter-spacing:.03em; cursor:pointer; border:none;
+    box-shadow:0 5px 0 #7c2532; transition:transform .1s ease, box-shadow .1s ease, filter .15s ease;
+  }
+  .landing-btn-primary:hover{ filter:brightness(1.06); }
+  .landing-btn-primary:active{ transform:translateY(4px); box-shadow:0 1px 0 #7c2532; }
+  .landing-btn-secondary{
+    width:100%; background:transparent; color:var(--ink); padding:12px 20px; border-radius:8px;
+    font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:14px; cursor:pointer;
+    border:1.5px dashed rgba(32,41,58,.3);
+  }
+  .landing-join-row{ display:flex; gap:8px; margin-top:12px; align-items:flex-start; }
+  .landing-join-row input{ flex:1; margin-bottom:0; }
+  .landing-join-row button{ white-space:nowrap; width:auto; padding:10px 18px; margin-top:0; }
+  .landing-error{ color:var(--bad); font-size:13px; min-height:18px; margin-top:10px; text-align:center; }
+
+  /* ---------- solo tab: the existing quiz, tucked in its own dark "night desk" inset ---------- */
+  .solo-frame{
+    background:
+      radial-gradient(ellipse at 20% -10%, #1a2c42 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 110%, #0e1a2a 0%, transparent 55%),
+      var(--bg-deep);
+    border-radius:var(--radius);
+    padding:26px 18px 30px;
+    margin:0 -4px;
   }
 
   /* ---------- category stamps ---------- */
   .cats{
     display:flex; flex-wrap:wrap; justify-content:center;
-    gap:8px 10px; margin:26px 0 30px;
+    gap:8px 10px; margin:0 0 22px;
   }
   .cat-chip{
     font-family:"IBM Plex Mono", monospace;
@@ -70,7 +150,7 @@
     background:var(--paper);
     color:var(--ink);
     border-radius:var(--radius);
-    padding:30px 30px 26px;
+    padding:26px 24px 22px;
     box-shadow:0 18px 40px rgba(0,0,0,.35), 0 2px 0 var(--paper-shadow) inset;
     background-image:
       repeating-linear-gradient(180deg, transparent 0 39px, rgba(32,41,58,.05) 39px 40px);
@@ -102,22 +182,22 @@
   }
   .fr-sentence{
     font-family:"Source Serif 4", serif;
-    font-size:clamp(21px,3.4vw,27px);
+    font-size:clamp(19px,3.2vw,25px);
     line-height:1.4;
-    margin:6px 0 24px;
+    margin:6px 0 22px;
   }
   .fr-sentence::before{ content:"“"; color:var(--red); }
   .fr-sentence::after{ content:"”"; color:var(--red); }
 
   textarea.answer{
     width:100%;
-    min-height:88px;
+    min-height:80px;
     resize:vertical;
     border:none;
     border-bottom:2px solid rgba(32,41,58,.35);
     background:transparent;
     font-family:"Source Serif 4", serif;
-    font-size:18px;
+    font-size:17px;
     color:var(--ink);
     padding:6px 2px 10px;
     outline:none;
@@ -127,7 +207,7 @@
 
   .doc-actions{
     display:flex; justify-content:space-between; align-items:center;
-    margin-top:18px; gap:12px; flex-wrap:wrap;
+    margin-top:16px; gap:12px; flex-wrap:wrap;
   }
   .hint-count{ font-size:12px; color:var(--ink-soft); font-family:"IBM Plex Mono", monospace; }
 
@@ -149,15 +229,15 @@
 
   /* stamp graphic */
   .stampmark{
-    position:absolute; top:26px; right:34px;
-    width:92px; height:92px;
+    position:absolute; top:22px; right:28px;
+    width:84px; height:84px;
     border:3px solid var(--red);
     border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     text-align:center;
     color:var(--red);
     font-family:"Special Elite", monospace;
-    font-size:12px;
+    font-size:11px;
     transform:rotate(-14deg) scale(0);
     opacity:0;
     pointer-events:none;
@@ -175,9 +255,9 @@
   /* reveal panel */
   .reveal{
     display:none;
-    margin-top:22px;
+    margin-top:20px;
     border-top:1.5px dashed rgba(32,41,58,.3);
-    padding-top:18px;
+    padding-top:16px;
   }
   .reveal.show{ display:block; }
   .rline{ margin-bottom:14px; }
@@ -188,11 +268,11 @@
   }
   .rline.native .label{ color:var(--red); }
   .rline.formal .label{ color:var(--ink-soft); }
-  .rline .content{ font-size:15.5px; line-height:1.5; }
+  .rline .content{ font-size:15px; line-height:1.5; }
   .rline .content em{ color:var(--ink-soft); font-style:italic; }
 
   .self-assess{
-    display:flex; gap:8px; flex-wrap:wrap; margin-top:18px;
+    display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;
   }
   .self-assess button{
     flex:1; min-width:110px;
@@ -210,19 +290,10 @@
     background:none; color:var(--blue); text-decoration:underline; padding:4px 0;
   }
 
-  /* ---------- nav to game ---------- */
-  .play-link{
-    display:inline-block; margin-top:16px;
-    font-family:"IBM Plex Mono", monospace; font-size:12px; letter-spacing:.05em;
-    color:#1c1305; background:var(--brass); border:1px solid var(--brass-light);
-    border-radius:999px; padding:8px 16px; text-decoration:none;
-  }
-  .play-link:hover{ background:var(--brass-light); }
-
-  /* ---------- lower grid: notebook + progress ---------- */
+  /* ---------- lower grid: progress ---------- */
   .lower{
     display:grid; grid-template-columns:1fr; gap:20px;
-    max-width:480px; margin:34px auto 0;
+    max-width:480px; margin:26px auto 0;
   }
 
   .panel{
@@ -251,7 +322,12 @@
   .big-stat .num{ font-family:"Special Elite", monospace; font-size:38px; color:var(--brass-light); }
   .big-stat .lbl{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#8b95a6; font-family:"IBM Plex Mono", monospace; }
 
-  footer{ text-align:center; margin-top:40px; font-size:11.5px; color:#5c6b80; font-family:"IBM Plex Mono", monospace; }
+  footer{ text-align:center; margin-top:30px; font-size:11.5px; color:var(--ink-soft); font-family:"IBM Plex Mono", monospace; }
+
+  @media (max-width:520px){
+    .landing-join-row{ flex-direction:column; }
+    .landing-join-row button{ width:100%; }
+  }
 </style>
 </head>
 <body>
@@ -261,81 +337,167 @@
     <div class="eyebrow">Carnet de traduction — édition vivante</div>
     <h1>L'anglais qui sert vraiment.</h1>
     <p class="sub">Une phrase en français, ta traduction, puis la comparaison : comment un Anglais le dirait réellement, et comment on l'écrirait à l'examen.</p>
-    <a class="play-link" href="/jouer">🎮 Jouer entre amis →</a>
   </header>
 
-  <div class="cats" id="cats"></div>
-
-  <div class="document" id="document">
-    <div class="stampmark" id="stampmark">VU<br>✓</div>
-    <div class="doc-top">
-      <span class="tag" id="catTag">VOYAGE</span>
-      <span id="counter">carte 1 / 60</span>
-    </div>
-    <div class="fr-sentence" id="frSentence">Chargement…</div>
-    <textarea class="answer" id="answerBox" placeholder="Écris ta traduction ici…"></textarea>
-    <div class="doc-actions">
-      <span class="hint-count" id="masteryHint"></span>
-      <div style="display:flex; gap:10px;">
-        <button class="btn-ghost" id="skipBtn">passer →</button>
-        <button class="btn-stamp" id="stampBtn">Tamponner ma réponse</button>
-      </div>
-    </div>
-
-    <div class="reveal" id="reveal">
-      <div class="rline">
-        <span class="label">Traduction(s) possible(s)</span>
-        <div class="content" id="revEn"></div>
-      </div>
-      <div class="rline native">
-        <span class="label">Comme un vrai Anglais le dirait</span>
-        <div class="content" id="revNative"></div>
-      </div>
-      <div class="rline formal">
-        <span class="label">Version soutenue / à l'écrit (façon TOEIC)</span>
-        <div class="content" id="revFormal"></div>
-      </div>
-      <div class="rline">
-        <span class="label">Grammaire</span>
-        <div class="content" id="revGrammar"></div>
-      </div>
-      <div class="rline">
-        <span class="label">Vocabulaire</span>
-        <div class="content" id="revVocab"></div>
-      </div>
-      <div class="rline">
-        <span class="label">Astuce culturelle</span>
-        <div class="content" id="revTip"></div>
+  <div class="landing-wrap">
+    <div class="landing-card">
+      <div class="landing-tabs">
+        <button class="landing-tab active" data-tab="play">🎮 Multijoueur</button>
+        <button class="landing-tab" data-tab="solo">📓 Solo</button>
       </div>
 
-      <button class="add-vocab-quick" id="addVocabQuick">+ Ajouter ce vocabulaire à mon carnet</button>
-
-      <div class="self-assess">
-        <button data-lvl="3">Nickel, je savais</button>
-        <button data-lvl="2">Presque</button>
-        <button data-lvl="1">À revoir</button>
+      <div class="landing-panel active" data-panel="play">
+        <div class="landing-hint">Choisis un personnage, ton pseudo, et lance une partie entre amis.</div>
+        <div class="avatar-grid" id="avatarGrid"></div>
+        <input id="landingNameInput" placeholder="Ton pseudo" maxlength="24" autocomplete="off">
+        <div class="landing-actions">
+          <button id="landingCreateBtn" class="landing-btn-primary">Créer une partie</button>
+          <button id="landingJoinToggleBtn" class="landing-btn-secondary">Rejoindre une partie</button>
+        </div>
+        <div class="landing-join-row" id="landingJoinRow" style="display:none;">
+          <input id="landingCodeInput" placeholder="Code (ex: K7QP)" maxlength="4" autocomplete="off">
+          <button id="landingJoinBtn" class="landing-btn-primary">Rejoindre</button>
+        </div>
+        <div id="landingError" class="landing-error"></div>
       </div>
-    </div>
-  </div>
 
-  <div class="lower">
-    <div class="panel">
-      <h2>Ta progression</h2>
-      <div class="desc">Un tampon par phrase bien maîtrisée.</div>
-      <div class="big-stat">
-        <div class="num" id="stampCount">0</div>
-        <div class="lbl">phrases maîtrisées</div>
+      <div class="landing-panel" data-panel="solo">
+        <div class="solo-frame">
+          <div class="cats" id="cats"></div>
+
+          <div class="document" id="document">
+            <div class="stampmark" id="stampmark">VU<br>✓</div>
+            <div class="doc-top">
+              <span class="tag" id="catTag">VOYAGE</span>
+              <span id="counter">carte 1 / 60</span>
+            </div>
+            <div class="fr-sentence" id="frSentence">Chargement…</div>
+            <textarea class="answer" id="answerBox" placeholder="Écris ta traduction ici…"></textarea>
+            <div class="doc-actions">
+              <span class="hint-count" id="masteryHint"></span>
+              <div style="display:flex; gap:10px;">
+                <button class="btn-ghost" id="skipBtn">passer →</button>
+                <button class="btn-stamp" id="stampBtn">Tamponner ma réponse</button>
+              </div>
+            </div>
+
+            <div class="reveal" id="reveal">
+              <div class="rline">
+                <span class="label">Traduction(s) possible(s)</span>
+                <div class="content" id="revEn"></div>
+              </div>
+              <div class="rline native">
+                <span class="label">Comme un vrai Anglais le dirait</span>
+                <div class="content" id="revNative"></div>
+              </div>
+              <div class="rline formal">
+                <span class="label">Version soutenue / à l'écrit (façon TOEIC)</span>
+                <div class="content" id="revFormal"></div>
+              </div>
+              <div class="rline">
+                <span class="label">Grammaire</span>
+                <div class="content" id="revGrammar"></div>
+              </div>
+              <div class="rline">
+                <span class="label">Vocabulaire</span>
+                <div class="content" id="revVocab"></div>
+              </div>
+              <div class="rline">
+                <span class="label">Astuce culturelle</span>
+                <div class="content" id="revTip"></div>
+              </div>
+
+              <button class="add-vocab-quick" id="addVocabQuick">+ Ajouter ce vocabulaire à mon carnet</button>
+
+              <div class="self-assess">
+                <button data-lvl="3">Nickel, je savais</button>
+                <button data-lvl="2">Presque</button>
+                <button data-lvl="1">À revoir</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="lower">
+            <div class="panel">
+              <h2>Ta progression</h2>
+              <div class="desc">Un tampon par phrase bien maîtrisée.</div>
+              <div class="big-stat">
+                <div class="num" id="stampCount">0</div>
+                <div class="lbl">phrases maîtrisées</div>
+              </div>
+              <div id="statBars"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div id="statBars"></div>
     </div>
   </div>
 
   <footer>fait pour parler, pas pour un examen — même si ça aide aussi pour ça</footer>
 </div>
 
+<script src="/avatars.js"></script>
 <script>
 (function(){
 
+  // ================= landing: tabs, avatar picker, create/join handoff =================
+  const HANDOFF_KEY = 'jouer-pending-action';
+  let selectedAvatar = (window.Avatars && window.Avatars.list[0].key) || 'pigeon';
+
+  function renderAvatarGrid(){
+    const grid = document.getElementById('avatarGrid');
+    if (!grid || !window.Avatars) return;
+    grid.innerHTML = window.Avatars.list.map((a) => `
+      <button type="button" class="avatar-btn${a.key === selectedAvatar ? ' selected' : ''}" data-key="${a.key}" title="${a.label}">
+        ${window.Avatars.iconHtml(a.key, 32)}
+      </button>
+    `).join('');
+    grid.querySelectorAll('.avatar-btn').forEach((btn) => {
+      btn.onclick = () => {
+        selectedAvatar = btn.dataset.key;
+        renderAvatarGrid();
+      };
+    });
+  }
+  renderAvatarGrid();
+
+  function showLandingError(msg){
+    const box = document.getElementById('landingError');
+    if (box) box.textContent = msg;
+  }
+
+  document.getElementById('landingJoinToggleBtn').onclick = () => {
+    const row = document.getElementById('landingJoinRow');
+    row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+  };
+
+  document.getElementById('landingCreateBtn').onclick = () => {
+    const name = document.getElementById('landingNameInput').value.trim();
+    if (!name) return showLandingError('Entre un pseudo.');
+    sessionStorage.setItem(HANDOFF_KEY, JSON.stringify({ action: 'create', name, avatar: selectedAvatar }));
+    window.location.href = '/jouer';
+  };
+
+  document.getElementById('landingJoinBtn').onclick = () => {
+    const name = document.getElementById('landingNameInput').value.trim();
+    const code = document.getElementById('landingCodeInput').value.trim().toUpperCase();
+    if (!name) return showLandingError('Entre un pseudo.');
+    if (!code) return showLandingError('Entre le code de la partie.');
+    sessionStorage.setItem(HANDOFF_KEY, JSON.stringify({ action: 'join', name, avatar: selectedAvatar, code }));
+    window.location.href = '/jouer';
+  };
+
+  document.querySelectorAll('.landing-tab').forEach((tab) => {
+    tab.onclick = () => {
+      document.querySelectorAll('.landing-tab').forEach((t) => t.classList.remove('active'));
+      document.querySelectorAll('.landing-panel').forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector(`.landing-panel[data-panel="${tab.dataset.tab}"]`).classList.add('active');
+      document.querySelector('.landing-wrap').classList.toggle('solo-active', tab.dataset.tab === 'solo');
+    };
+  });
+
+  // ================= solo quiz (unchanged logic, now living under the Solo tab) =================
   let CATEGORIES = [];
   let DATA = [];
 
@@ -346,8 +508,6 @@
     DATA = data.items;
   }
 
-
-  // ---------------- state ----------------
   let mastery = {};      // {id: {level, seen}}
   let activeCats = new Set();
   let currentCard = null;
@@ -355,7 +515,6 @@
 
   const $ = (sel)=>document.querySelector(sel);
 
-  // ---------------- storage ----------------
   function loadState(){
     try{
       const raw = localStorage.getItem('carnet-mastery');
@@ -367,7 +526,6 @@
     catch(e){ console.error('save mastery failed', e); }
   }
 
-  // ---------------- category chips ----------------
   function renderCats(){
     const el = $('#cats');
     el.innerHTML = '';
@@ -395,7 +553,6 @@
 
   function catLabel(key){ return (CATEGORIES.find(c=>c.key===key)||{}).label || key; }
 
-  // ---------------- card picking ----------------
   function weightFor(id){
     const m = mastery[id];
     if(!m) return 5;
@@ -434,7 +591,6 @@
     $('#counter').textContent = 'carte ' + idx + ' / ' + pool.length;
     const m = mastery[currentCard.id];
     $('#masteryHint').textContent = m ? ('vue ' + (m.seen||1) + ' fois') : 'nouvelle phrase';
-    $('#answerBox').focus();
   }
 
   function reveal(){
@@ -465,7 +621,6 @@
     setTimeout(nextCard, 250);
   }
 
-  // ---------------- stats ----------------
   function renderStats(){
     const mastered = Object.values(mastery).filter(m=>m.level===3).length;
     $('#stampCount').textContent = mastered;
@@ -485,7 +640,6 @@
     });
   }
 
-  // ---------------- wire up ----------------
   $('#stampBtn').onclick = reveal;
   $('#skipBtn').onclick = nextCard;
   $('#answerBox').addEventListener('keydown', (e)=>{
@@ -502,7 +656,6 @@
     });
   };
 
-  // ---------------- init ----------------
   (async function init(){
     await loadVocabBank();
     activeCats = new Set(CATEGORIES.map(c=>c.key));

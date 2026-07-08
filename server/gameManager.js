@@ -19,6 +19,11 @@ const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O, 1/I/L
 const ICEBREAKER_CHANCE = 0.45;
 const ICEBREAKER_DURATION_MS = 20000;
 const ICEBREAKER_RESULTS_DURATION_MS = 6000;
+const AVATAR_KEYS = ['pigeon', 'stamp', 'envelope', 'seal', 'quill', 'compass'];
+
+function normalizeAvatar(avatar) {
+  return AVATAR_KEYS.includes(avatar) ? avatar : 'pigeon';
+}
 
 const sessions = new Map();
 let io = null;
@@ -54,6 +59,7 @@ function publicPlayers(session) {
   return [...session.players.values()].map((p) => ({
     id: p.id,
     name: p.name,
+    avatar: p.avatar,
     connected: p.connected,
     totalScore: p.totalScore,
   }));
@@ -61,7 +67,7 @@ function publicPlayers(session) {
 
 function leaderboard(session) {
   return [...session.players.values()]
-    .map((p) => ({ playerId: p.id, name: p.name, totalScore: p.totalScore }))
+    .map((p) => ({ playerId: p.id, name: p.name, avatar: p.avatar, totalScore: p.totalScore }))
     .sort((a, b) => b.totalScore - a.totalScore);
 }
 
@@ -73,7 +79,7 @@ function broadcastSessionUpdate(session) {
   });
 }
 
-function createSession(hostSocketId, hostName) {
+function createSession(hostSocketId, hostName, hostAvatar) {
   const code = generateCode();
   const trimmedHostName = (hostName || '').trim().slice(0, 24) || 'Chef';
   const hostPlayerId = makePlayerId();
@@ -111,6 +117,7 @@ function createSession(hostSocketId, hostName) {
   session.players.set(hostPlayerId, {
     id: hostPlayerId,
     name: trimmedHostName,
+    avatar: normalizeAvatar(hostAvatar),
     socketId: hostSocketId,
     connected: true,
     totalScore: 0,
@@ -123,7 +130,7 @@ function getSession(code) {
   return sessions.get((code || '').toUpperCase());
 }
 
-function joinSession(session, socketId, name) {
+function joinSession(session, socketId, name, avatar) {
   const trimmed = (name || '').trim().slice(0, 24);
   if (!trimmed) return { error: 'Choisis un pseudo.' };
   if (session.phase !== 'lobby') return { error: 'La partie a déjà commencé.' };
@@ -132,7 +139,7 @@ function joinSession(session, socketId, name) {
   );
   if (nameTaken) return { error: 'Ce pseudo est déjà pris dans cette partie.' };
   const id = makePlayerId();
-  session.players.set(id, { id, name: trimmed, socketId, connected: true, totalScore: 0 });
+  session.players.set(id, { id, name: trimmed, avatar: normalizeAvatar(avatar), socketId, connected: true, totalScore: 0 });
   return { playerId: id };
 }
 
@@ -175,6 +182,7 @@ function reviewShowPayload(session) {
     formal: round.formal,
     playerId,
     playerName: player ? player.name : '???',
+    playerAvatar: player ? player.avatar : null,
     answerText: answer ? answer.text : null,
     grade: gradeEntry ? gradeEntry.grade : null,
     points: gradeEntry ? gradeEntry.points : null,

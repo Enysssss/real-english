@@ -4,17 +4,17 @@ function registerSocketHandlers(io) {
   gameManager.attach(io);
 
   io.on('connection', (socket) => {
-    socket.on('session:create', ({ hostName } = {}, ack) => {
-      const session = gameManager.createSession(socket.id, hostName);
+    socket.on('session:create', ({ hostName, avatar } = {}, ack) => {
+      const session = gameManager.createSession(socket.id, hostName, avatar);
       socket.join(session.code);
       ack && ack({ code: session.code, playerId: session.hostPlayerId });
       gameManager.broadcastSessionUpdate(session);
     });
 
-    socket.on('session:join', ({ code, name } = {}, ack) => {
+    socket.on('session:join', ({ code, name, avatar } = {}, ack) => {
       const session = gameManager.getSession(code);
       if (!session) return ack && ack({ error: 'Code de partie introuvable.' });
-      const result = gameManager.joinSession(session, socket.id, name);
+      const result = gameManager.joinSession(session, socket.id, name, avatar);
       if (result.error) return ack && ack({ error: result.error });
       socket.join(session.code);
       ack && ack({ playerId: result.playerId, snapshot: gameManager.snapshotFor(session) });
