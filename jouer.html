@@ -312,6 +312,17 @@
   }
   .vote-custom-answer .voter-name{ font-weight:600; color:var(--ink); }
 
+  .opinion-answers{ display:flex; flex-direction:column; gap:10px; margin:14px 0 18px; }
+  .opinion-answer{
+    border-left:3px solid var(--brass); background:rgba(32,41,58,.04);
+    padding:9px 12px; border-radius:4px;
+  }
+  .opinion-answer .voter-name{
+    display:block; font-family:"IBM Plex Mono", monospace; font-size:11px;
+    text-transform:uppercase; letter-spacing:.05em; color:var(--blue); margin-bottom:3px;
+  }
+  .opinion-answer-text{ font-size:14px; color:var(--ink); line-height:1.45; }
+
   .ref-answers{
     background:rgba(32,41,58,.05); border-radius:2px; padding:12px 14px; margin-bottom:14px;
   }
@@ -890,20 +901,36 @@
     if (state.type === 'vote'){ renderIcebreakerVote(); return; }
     const hasTarget = !!state.targetPlayerId;
     const isTarget = hasTarget && state.targetPlayerId === me.playerId;
+    const answeredPlayerIds = state.answeredPlayerIds || [];
+    const iHaveAnswered = answeredPlayerIds.includes(me.playerId);
     app.innerHTML = `
       <div class="card paper">
         <div class="round-label">Pause fun 🎉</div>
         <div style="display:flex;justify-content:center;margin-bottom:8px;">${pigeonSvg('confused', 52)}</div>
         ${hasTarget ? `<div class="icebreaker-target">${isTarget ? "It's about YOU!" : escapeHtml(state.targetName)}</div>` : ''}
         <div class="icebreaker-text">${escapeHtml(state.text)}</div>
-        <div class="icebreaker-hint">Réponds dans le chat, en anglais 🇬🇧 !</div>
+        ${iHaveAnswered
+          ? `<div class="muted" style="text-align:center;margin-bottom:12px;">Réponse envoyée ! En attente des autres${waitingDots()}</div>`
+          : `
+            <textarea id="icebreakerAnswerInput" placeholder="Ta réponse en anglais…" maxlength="200"></textarea>
+            <button id="icebreakerAnswerBtn" class="btn-primary" style="margin-top:2px;margin-bottom:14px;">Envoyer</button>
+          `}
+        <div class="icebreaker-hint">Réponds en anglais 🇬🇧 !</div>
         <div class="timer" id="timerDisplay"></div>
-        ${me.isHost
-          ? `<button id="icebreakerSkipBtn" class="btn-primary">Passer</button>`
-          : `<div class="muted">La question suivante arrive dans quelques secondes${waitingDots()}</div>`}
+        ${me.isHost ? `<button id="icebreakerSkipBtn" class="btn-primary">Passer</button>` : ''}
         <div id="errorBox" class="error-box"></div>
       </div>
     `;
+    if (!iHaveAnswered){
+      document.getElementById('icebreakerAnswerBtn').onclick = () => {
+        const text = document.getElementById('icebreakerAnswerInput').value;
+        if (!text.trim()) return showError('Écris quelque chose.');
+        Sound.tick();
+        socket.emit('icebreaker:answer', { code: me.code, text }, (res) => {
+          if (res && res.error) showError(res.error);
+        });
+      };
+    }
     if (me.isHost){
       document.getElementById('icebreakerSkipBtn').onclick = () => {
         socket.emit('icebreaker:skip', { code: me.code }, (res) => {
@@ -969,6 +996,7 @@
   }
 
   function renderIcebreakerResults(){
+    if (state.kind === 'opinion'){ renderIcebreakerOpinionResults(); return; }
     const tally = state.tally || [];
     const maxCount = Math.max(1, ...tally.map(t => t.count));
     const customAnswers = state.customAnswers || [];
@@ -1006,6 +1034,39 @@
         });
       });
     });
+    if (me.isHost){
+      document.getElementById('icebreakerSkipBtn').onclick = () => {
+        socket.emit('icebreaker:skip', { code: me.code }, (res) => {
+          if (res && res.error) showError(res.error);
+        });
+      };
+    }
+  }
+
+  function renderIcebreakerOpinionResults(){
+    const answers = state.answers || [];
+    const hasProgress = Number.isInteger(state.index) && Number.isInteger(state.total);
+    app.innerHTML = `
+      <div class="card paper">
+        <div class="round-label">Les réponses 📬${hasProgress ? ` (${state.index + 1} / ${state.total})` : ''}</div>
+        <div style="display:flex;justify-content:center;margin-bottom:8px;">${pigeonSvg('excited', 52)}</div>
+        <div class="icebreaker-text">${escapeHtml(state.text)}</div>
+        <div class="opinion-answers">
+          ${answers.length
+            ? answers.map(a => `
+              <div class="opinion-answer">
+                <span class="voter-name">${escapeHtml(a.voterName)}</span>
+                <div class="opinion-answer-text">${escapeHtml(a.text)}</div>
+              </div>
+            `).join('')
+            : `<div class="muted">Personne n'a répondu à temps.</div>`}
+        </div>
+        ${me.isHost
+          ? `<button id="icebreakerSkipBtn" class="btn-primary">Continuer</button>`
+          : `<div class="muted">La suite arrive dans quelques secondes${waitingDots()}</div>`}
+        <div id="errorBox" class="error-box"></div>
+      </div>
+    `;
     if (me.isHost){
       document.getElementById('icebreakerSkipBtn').onclick = () => {
         socket.emit('icebreaker:skip', { code: me.code }, (res) => {

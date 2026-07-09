@@ -317,19 +317,61 @@ function startIcebreakerOpinion(session, entry, next) {
   const targetName = target ? target.name : '???';
   session.lastIcebreakerTargetId = targetId;
 
+  session.icebreakerOpinionAnswers = new Map();
   session.phase = 'icebreaker';
   session.currentIcebreaker = {
     type: 'opinion',
     targetPlayerId: targetId,
     targetName,
     text: entry.text.replace('{name}', targetName),
+    answeredPlayerIds: [],
     deadline: Date.now() + ICEBREAKER_DURATION_MS,
   };
   io.to(session.code).emit('icebreaker:show', session.currentIcebreaker);
-  armIcebreakerAdvance(session, () => {
-    session.currentIcebreaker = null;
-    next();
-  }, ICEBREAKER_DURATION_MS);
+  armIcebreakerAdvance(session, () => finishIcebreakerOpinion(session, next), ICEBREAKER_DURATION_MS);
+}
+
+function submitIcebreakerOpinionAnswer(session, socketId, text) {
+  if (session.phase !== 'icebreaker' || !session.currentIcebreaker || session.currentIcebreaker.type !== 'opinion') {
+    return { error: "Ce n'est pas le moment de répondre." };
+  }
+  const player = findPlayerBySocket(session, socketId);
+  if (!player) return { error: 'Joueur inconnu.' };
+  if (session.icebreakerOpinionAnswers.has(player.id)) return { error: 'Tu as déjà répondu.' };
+  const trimmed = (text || '').trim().slice(0, 200);
+  if (!trimmed) return { error: 'Écris quelque chose.' };
+  session.icebreakerOpinionAnswers.set(player.id, { text: trimmed, voterName: player.name });
+  session.currentIcebreaker.answeredPlayerIds = [...session.icebreakerOpinionAnswers.keys()];
+
+  const requiredPlayers = session.playerOrder.filter((id) => {
+    const p = session.players.get(id);
+    return p && p.connected;
+  });
+  const allAnswered = requiredPlayers.every((id) => session.icebreakerOpinionAnswers.has(id));
+  if (allAnswered) {
+    const advance = session.pendingAfterIcebreaker;
+    if (advance) advance();
+  } else {
+    io.to(session.code).emit('icebreaker:show', session.currentIcebreaker);
+  }
+  return {};
+}
+
+function finishIcebreakerOpinion(session, next) {
+  const answers = session.playerOrder
+    .filter((id) => session.icebreakerOpinionAnswers.has(id))
+    .map((id) => session.icebreakerOpinionAnswers.get(id));
+
+  // Same idea as the vote reveal — stash it, keep the round moving, show it
+  // during the end-of-game review montage instead of interrupting the pace.
+  session.icebreakerResultsLog.push({
+    kind: 'opinion',
+    text: session.currentIcebreaker.text,
+    targetName: session.currentIcebreaker.targetName,
+    answers,
+  });
+  session.currentIcebreaker = null;
+  next();
 }
 
 function startIcebreakerVote(session, entry, next) {
@@ -403,7 +445,7 @@ function finishIcebreakerVote(session, next) {
 
   // Don't reveal now — stash it and keep the round moving. It gets shown
   // during the end-of-game review, right alongside the translation reveal.
-  session.icebreakerResultsLog.push({ text: session.currentIcebreaker.text, tally, customAnswers });
+  session.icebreakerResultsLog.push({ kind: 'vote', text: session.currentIcebreaker.text, tally, customAnswers });
   session.currentIcebreaker = null;
   next();
 }
@@ -626,6 +668,7 @@ module.exports = {
   gradeAnswer,
   skipIcebreaker,
   submitIcebreakerVote,
+  submitIcebreakerOpinionAnswer,
   sendChatMessage,
   snapshotFor,
   broadcastSessionUpdate,
